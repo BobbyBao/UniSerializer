@@ -21,24 +21,24 @@ namespace UniSerializer
         public abstract bool Get(object obj, out object value);
         public abstract bool Set(object obj, object value);
 
-        public abstract void Serialize(Serializer serializer, object obj);
+        public abstract void Serialize(ISerializer serializer, object obj);
 
     }
 
 
-    public class PropertyAccessor<K, T> : MemberAccessor
+    public class ObjectMemberAccessor<K, T> : MemberAccessor
     {
         public Func<K, T> getter;
         public Action<K, T> setter;
 
-        public PropertyAccessor(FieldInfo fieldInfo)
+        public ObjectMemberAccessor(FieldInfo fieldInfo)
         {
             this.memberInfo = fieldInfo;
             //getter = (Func<K, T>)Delegate.CreateDelegate(typeof(Func<K, T>), fieldInfo.GetMethod);
             //setter = (Action<K, T>)Delegate.CreateDelegate(typeof(Action<K, T>), fieldInfo.SetMethod);
         }
 
-        public PropertyAccessor(PropertyInfo propertyInfo)
+        public ObjectMemberAccessor(PropertyInfo propertyInfo)
         {
             this.memberInfo = propertyInfo;
             getter = (Func<K, T>)Delegate.CreateDelegate(typeof(Func<K, T>), propertyInfo.GetMethod);
@@ -69,14 +69,13 @@ namespace UniSerializer
             return true;
         }
 
-        public override void Serialize(Serializer serializer, object obj)
+        public override void Serialize(ISerializer serializer, object obj)
         {
             if(serializer.IsReading)
             {
                 T val = default;
                 serializer.Serialize(ref val);
                 Set(obj, val);
-
             }
             else
             {
@@ -89,34 +88,9 @@ namespace UniSerializer
 
     }
 
-    public class ObjectFormatter<T> : IFormatter<T>
+    public class MemberAccessorMap<K> : Dictionary<string, MemberAccessor>
     {
-        static PropertyAccessorMap<T> attributeMap = new PropertyAccessorMap<T>();
-
-        public override void Serialize(Serializer serializer, ref T obj)
-        {
-            serializer.StartObject();
-
-            foreach (var it in attributeMap)
-            {
-                serializer.StartAttribute(it.Key);
-                it.Value.Serialize(serializer, obj);
-                serializer.EndAttribute();
-            }
-
-            serializer.EndObject();
-        }
-
-//         public void Serialize(Serializer visitor, object obj)
-//         {
-//             Serialize(visitor, (T)obj);
-//         }
-
-    }
-
-    public class PropertyAccessorMap<K> : Dictionary<string, MemberAccessor>
-    {
-        public PropertyAccessorMap()
+        public MemberAccessorMap()
         {
             var properties = typeof(K).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var p in properties)
@@ -147,7 +121,7 @@ namespace UniSerializer
             if (mi.GetParameters().Length > 1)
                 throw new NotSupportedException("不支持构造索引器属性的委托。");
 
-            Type instanceType = typeof(PropertyAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
+            Type instanceType = typeof(ObjectMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
             return (MemberAccessor)Activator.CreateInstance(instanceType, propertyInfo);
         }
 

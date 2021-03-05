@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace UniSerializer
@@ -23,8 +24,8 @@ namespace UniSerializer
         void EndObject();
         void StartArray(ref int len);
         void EndArray();
-        void StartAttribute(string name);
-        void EndAttribute();
+        void StartProperty(string name);
+        void EndProperty();
     }
 
     public abstract class Serializer : ISerializer
@@ -34,22 +35,59 @@ namespace UniSerializer
 
         public virtual void Serialize<T>(ref T val)
         {
+            Type type = typeof(T);
+            if (type.IsPrimitive)
+            {
+                SerializePrimitive(ref val);
+            }
+            else
+            {
+                SerializeObject(ref val);
+            }
         }
 
         public virtual void Serialize(ref object val)
         {
+            Type type = val.GetType();
+
+            if (type.IsPrimitive)
+            {
+                SerializePrimitive(ref val);
+            }
+            else
+            {
+                SerializeObject(ref val);
+            }
         }
 
-        public virtual void SerializeObject<T>(ref T val)
+        public virtual void SerializeObject<T>(ref T obj)
         {
-        }
+            if (obj is ISerializable ser)
+            {
+                StartObject();
+                ser.Serialize(this);
+                EndObject();
+            }
+            else
+            {
+                Type type = obj.GetType();
+                if (type != typeof(T))
+                {
+                    FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, Object>(ref obj));
+                }
+                else
+                    FormatterCache<T>.instance.Serialize(this, ref obj);
+            }
 
-        public virtual void SerializeNull()
-        {
         }
 
         public virtual void SerializeProperty<T>(string name, ref T val)
         {
+            StartProperty(name);
+
+            Serialize(ref val);
+
+            EndProperty();
         }
 
         public virtual void StartObject()
@@ -68,11 +106,15 @@ namespace UniSerializer
         {
         }
 
-        public virtual void StartAttribute(string name)
+        public virtual void StartProperty(string name)
         {
         }
 
-        public virtual void EndAttribute()
+        public virtual void EndProperty()
+        {
+        }
+
+        public virtual void SerializeNull()
         {
         }
 

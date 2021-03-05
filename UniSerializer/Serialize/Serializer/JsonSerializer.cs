@@ -26,64 +26,6 @@ namespace UniSerializer
             }
         }
 
-        public override void Serialize<T>(ref T val)
-        {
-            Type type = typeof(T);
-            if (type.IsPrimitive)
-            {
-                SerializePrimitive(ref val);
-            }
-            else
-            {
-                SerializeObject(ref val);
-            }
-        }
-
-        public override void Serialize(ref object val)
-        {
-            Type type = val.GetType();
-
-            if (type.IsPrimitive)
-            {
-                SerializePrimitive(ref val);
-            }
-            else
-            {
-                SerializeObject(ref val);
-            }
-        }
-
-        public override void SerializeObject<T>(ref T obj)
-        {
-            
-            if (obj is ISerializable ser)
-            {
-                StartObject();
-                ser.Serialize(this);
-                EndObject();
-            }
-            else
-            {
-                Type type = obj.GetType();
-                if(type != typeof(T))
-                {                    
-                    FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, Object>(ref obj));
-                }
-                else
-                    FormatterCache<T>.instance.Serialize(this, ref obj);
-            }
-
-        }
-
-        public override void SerializeProperty<T>(string name, ref T val)
-        {
-            StartAttribute(name);
-
-            Serialize(ref val);
-
-            EndAttribute();
-        }
-
         public override void StartObject()
         {               
             jsonWriter.WriteStartObject();
@@ -104,12 +46,12 @@ namespace UniSerializer
             jsonWriter.WriteEndArray();
         }
 
-        public override void StartAttribute(string name)
+        public override void StartProperty(string name)
         {
             jsonWriter.WritePropertyName(name);
         }
 
-        public override void EndAttribute()
+        public override void EndProperty()
         {
         }
 
