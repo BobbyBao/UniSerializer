@@ -296,6 +296,47 @@ namespace UniSerializer
 #endif
         }
 
+        public static Func<InstanceType, FieldType> CreateInstanceGetter<InstanceType, FieldType>(FieldInfo fieldInfo)
+        {
+            if (fieldInfo == null)
+            {
+                throw new ArgumentNullException("fieldInfo");
+            }
+
+            if (fieldInfo.IsStatic)
+            {
+                throw new ArgumentException("Field cannot be static.");
+            }
+
+#if !CAN_EMIT
+            // Platform does not support emitting dynamic code
+            return delegate (InstanceType classInstance)
+            {
+                return (FieldType)fieldInfo.GetValue(classInstance);
+            };
+#else
+            string methodName = fieldInfo.ReflectedType.FullName + ".get_" + fieldInfo.Name;
+
+            DynamicMethod getterMethod = new DynamicMethod(methodName, typeof(FieldType), new Type[1] { typeof(InstanceType) }, true);
+            ILGenerator gen = getterMethod.GetILGenerator();
+
+            if (typeof(InstanceType).IsValueType)
+            {
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Ldfld, fieldInfo);
+            }
+            else
+            {
+                gen.Emit(OpCodes.Ldarg_0);
+                gen.Emit(OpCodes.Ldind_Ref);
+                gen.Emit(OpCodes.Ldfld, fieldInfo);
+            }
+
+            gen.Emit(OpCodes.Ret);
+
+            return (Func<InstanceType, FieldType>)getterMethod.CreateDelegate(typeof(Func<InstanceType, FieldType>));
+#endif
+        }
         /// <summary>
         /// Creates a delegate which gets the value of a field from a weakly typed instance of a given type. If emitting is not supported on the current platform, the delegate will use reflection to get the value.
         /// </summary>
@@ -484,6 +525,40 @@ namespace UniSerializer
 #endif
         }
 
+        public static Action<InstanceType, FieldType> CreateInstanceSetter<InstanceType, FieldType>(FieldInfo fieldInfo)
+        {
+            if (fieldInfo == null)
+            {
+                throw new ArgumentNullException("fieldInfo");
+            }
+
+            if (fieldInfo.IsStatic)
+            {
+                throw new ArgumentException("Field cannot be static.");
+            }
+
+#if !CAN_EMIT
+            // Platform does not support emitting dynamic code
+            return delegate (InstanceType classInstance, FieldType value)
+            {                  
+                fieldInfo.SetValue(classInstance, value);                
+            };
+#else
+            string methodName = fieldInfo.ReflectedType.FullName + ".set_" + fieldInfo.Name;
+
+            DynamicMethod setterMethod = new DynamicMethod(methodName, null, new Type[2] { typeof(InstanceType), typeof(FieldType) }, true);
+            ILGenerator gen = setterMethod.GetILGenerator();
+
+            gen.Emit(OpCodes.Ldarg_0);
+            gen.Emit(OpCodes.Ldind_Ref);
+            gen.Emit(OpCodes.Ldarg_1);
+            gen.Emit(OpCodes.Stfld, fieldInfo);
+
+            gen.Emit(OpCodes.Ret);
+
+            return (Action<InstanceType, FieldType>)setterMethod.CreateDelegate(typeof(Action<InstanceType, FieldType>));
+#endif
+        }
         /// <summary>
         /// Creates a delegate which sets the value of a field on a weakly typed instance of a given type. If emitting is not supported on the current platform, the delegate will use reflection to set the value.
         /// </summary>
