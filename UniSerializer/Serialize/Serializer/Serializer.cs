@@ -6,31 +6,9 @@ using System.Text;
 
 namespace UniSerializer
 {
-
-    public interface ISerializable
-    {
-        void Serialize(Serializer serializer);
-    }
-
-    public interface ISerializer
-    {
-        bool IsReading { get; }
-        void Serialize<T>(ref T val);
-        void Serialize(ref object val);
-        void SerializeObject<T>(ref T val);
-        void SerializeNull();
-        void SerializeProperty<T>(string name, ref T val);
-        void StartObject();
-        void EndObject();
-        void StartArray(ref int len);
-        void EndArray();
-        void StartProperty(string name);
-        void EndProperty();
-    }
-
     public abstract class Serializer : ISerializer
     {
-        public bool IsReading { get; }
+        public bool IsReading { get; } = false;
         public bool IsWriting => !IsReading;
 
         public virtual void Serialize<T>(ref T val)
@@ -76,7 +54,7 @@ namespace UniSerializer
                     FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, Object>(ref obj));
                 }
                 else
-                    FormatterCache<T>.instance.Serialize(this, ref obj);
+                    FormatterCache<T>.Instance.Serialize(this, ref obj);
             }
 
         }

@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace UniSerializer
 {
-    public class JsonDeserializer : Serializer
+    public class JsonDeserializer : Deserializer
     {
         JsonDocument doc;
         JsonElement[] nodes = new JsonElement[32];
@@ -22,5 +22,32 @@ namespace UniSerializer
             return obj;
         }
 
+        public override void StartObject()
+        {
+        }
+
+        public override void EndObject()
+        {
+        }
+
+        public override void StartArray(ref int len)
+        {
+        }
+
+        public override void EndArray()
+        {
+        }
+
+        public override void StartProperty(string name)
+        {
+        }
+
+        public override void EndProperty()
+        {
+        }
+
+        protected override void SerializePrimitive<T>(ref T val)
+        {
+        }
     }
 }

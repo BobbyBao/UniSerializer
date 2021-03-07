@@ -152,9 +152,11 @@ namespace UniSerializer
     }
     public class MemberAccessorMap<K> : Dictionary<string, MemberAccessor>
     {
+        Type type = typeof(K);
+
         public MemberAccessorMap()
         {
-            var properties = typeof(K).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var p in properties)
             {
                 if (p.GetMethod == null || p.SetMethod == null)
@@ -167,22 +169,12 @@ namespace UniSerializer
                     continue;
                 }
 
-                Add(p.Name, CreatePropertySetterWrapper(p));
+                Add(p.Name, CreatePropertyAccessor(p));
             }
         }
 
-        public static MemberAccessor CreatePropertySetterWrapper(PropertyInfo propertyInfo)
+        public static MemberAccessor CreatePropertyAccessor(PropertyInfo propertyInfo)
         {
-            if (propertyInfo == null)
-                throw new ArgumentNullException("propertyInfo");
-            if (propertyInfo.CanWrite == false)
-                throw new NotSupportedException("属性不支持写操作。");
-
-            MethodInfo mi = propertyInfo.GetSetMethod(true);
-
-            if (mi.GetParameters().Length > 1)
-                throw new NotSupportedException("不支持构造索引器属性的委托。");
-
             Type instanceType = typeof(ObjectMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
             return (MemberAccessor)Activator.CreateInstance(instanceType, propertyInfo);
         }

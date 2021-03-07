@@ -49,11 +49,11 @@ namespace UniSerializer
 
     public class FormatterCache<T> : FormatterCache
     {
-        public static IFormatter<T> instance;
+        public static IFormatter<T> Instance { get; }
         static FormatterCache()
         {
             Type type = typeof(T);
-            instance = (IFormatter<T>)Get(type);
+            Instance = (IFormatter<T>)Get(type);
 
         }
     }
