@@ -5,14 +5,14 @@ namespace UniSerializer
 {
     public class AA
     {
+        float floatVal;
+        int[] intArray;
+
         public float FloatVal { get => floatVal; set => floatVal = value; }
         public int[] IntArray { get => intArray; set => intArray = value; }
-        float floatVal;
 
-        int[] intArray = new int[10];
-
-        public List<float> FloatList { get; set; } = new List<float> { 1.0f, 2.0f };
-
+        public List<float> FloatList { get; set; }
+        public Dictionary<string, string> StringDict { get; set; }
 
         public void Accept(Serializer visitor)
         {
@@ -25,7 +25,24 @@ namespace UniSerializer
     {
         static void Main(string[] args)
         {
+            Random r = new Random();
             var aa = new AA();
+            aa.IntArray = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            aa.FloatList = new List<float>();
+
+            for(int i = 0; i < 10; i++)
+            {
+                aa.FloatList.Add((float)r.NextDouble());
+            }
+
+
+            aa.StringDict = new Dictionary<string, string>
+            {
+                ["Key1"] = "Value1",
+                ["Key2"] = "Value2",
+                ["Key3"] = "Value3",
+            };
 
             new JsonSerializer().Save((object)aa, "test.json");
 

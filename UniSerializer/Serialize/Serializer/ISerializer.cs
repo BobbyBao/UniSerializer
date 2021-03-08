@@ -16,6 +16,7 @@
         bool StartObject(System.Type type);
         void EndObject();
         bool StartArray(System.Type type, ref int len);
+        void SetElement(int index);
         void EndArray();
         bool StartProperty(string name);
         void EndProperty();

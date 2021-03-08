@@ -19,6 +19,7 @@ namespace UniSerializer
 
             for(int i = 0; i < len; i++)
             {
+                serialzer.SetElement(i);
                 serialzer.Serialize(ref obj[i]);
             }
 
@@ -31,14 +32,20 @@ namespace UniSerializer
         public override void Serialize(ISerializer serialzer, ref List<T> obj)
         {
             int len = obj?.Count ?? 0;
-            serialzer.StartArray(obj.GetType(), ref len);
+            serialzer.StartArray(typeof(List<T>), ref len);
 
-            if(serialzer.IsReading)
+            if (obj == null)
+            {
+                obj = new List<T>();
+            }
+
+            if (serialzer.IsReading)
             {
                 obj.Clear();
                 for (int i = 0; i < len; i++)
                 {
                     T val = default;
+                    serialzer.SetElement(i);
                     serialzer.Serialize(ref val);
                     obj.Add(val);
                 }
@@ -49,6 +56,7 @@ namespace UniSerializer
                 for (int i = 0; i < len; i++)
                 {
                     T val = obj[i];
+                    serialzer.SetElement(i);
                     serialzer.Serialize(ref val);                    
                 }
 
@@ -63,7 +71,12 @@ namespace UniSerializer
         public override void Serialize(ISerializer serialzer, ref Dictionary<K, T> obj)
         {
             int len = obj?.Count ?? 0;
-            serialzer.StartArray(obj.GetType(), ref len);
+            serialzer.StartArray(typeof(Dictionary<K, T>), ref len);
+
+            if (obj == null)
+            {
+                obj = new Dictionary<K, T>();
+            }
 
             if (serialzer.IsReading)
             {
@@ -72,6 +85,7 @@ namespace UniSerializer
                 {
                     K key = default;
                     T val = default;
+                    serialzer.SetElement(i);
                     serialzer.Serialize(ref key);
                     serialzer.Serialize(ref val);
                     obj[key] = val;
@@ -83,7 +97,8 @@ namespace UniSerializer
                 foreach (var kvp in obj)
                 {
                     K k = kvp.Key;
-                    T v = kvp.Value; 
+                    T v = kvp.Value;
+                    //serialzer.SetElement(i);
                     serialzer.Serialize(ref k);
                     serialzer.Serialize(ref v);
                 }

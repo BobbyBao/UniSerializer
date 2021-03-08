@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
@@ -26,6 +27,11 @@ namespace UniSerializer
 
         protected override object CreateObject()
         {
+            if(currentNode.ValueKind != JsonValueKind.Object)
+            {
+                return null;
+            }
+
             if(!currentNode.TryGetProperty("$type" ,out var typeName))
             {
                 return null;
@@ -58,6 +64,12 @@ namespace UniSerializer
             return false;
         }
 
+        public override void SetElement(int index)
+        {
+            var parentNode = parentNodes[nodeCount - 1];
+            currentNode = parentNode[index];
+        }
+
         public override void EndArray()
         {
             currentNode = parentNodes[--nodeCount];
@@ -82,6 +94,46 @@ namespace UniSerializer
 
         protected override void SerializePrimitive<T>(ref T val)
         {
+            switch (val)
+            {
+                case bool v:
+                    Unsafe.As<T, bool>(ref val)  = currentNode.GetBoolean();                    
+                    break;
+                case int v:
+                    Unsafe.As<T, int>(ref val) = currentNode.GetInt32();
+                    break;
+                case uint v:
+                    Unsafe.As<T, uint>(ref val) = currentNode.GetUInt32();
+                    break;
+                case float v:
+                    Unsafe.As<T, float>(ref val) = currentNode.GetSingle();
+                    break;
+                case double v:
+                    Unsafe.As<T, double>(ref val) = currentNode.GetDouble();
+                    break;
+                case long v:
+                    Unsafe.As<T, long>(ref val) = currentNode.GetInt64();
+                    break;
+                case ulong v:
+                    Unsafe.As<T, ulong>(ref val) = currentNode.GetUInt64();
+                    break;
+                case short v:
+                    Unsafe.As<T, short>(ref val) = currentNode.GetInt16();
+                    break;
+                case ushort v:
+                    Unsafe.As<T, ushort>(ref val) = currentNode.GetUInt16();
+                    break;
+                case sbyte v:
+                    Unsafe.As<T, sbyte>(ref val) = currentNode.GetSByte();
+                    break;
+                case byte v:
+                    Unsafe.As<T, byte>(ref val) = currentNode.GetByte();
+                    break;
+                case decimal v:
+                    Unsafe.As<T, decimal>(ref val) = currentNode.GetDecimal();
+                    break;
+            }
+
         }
     }
 }

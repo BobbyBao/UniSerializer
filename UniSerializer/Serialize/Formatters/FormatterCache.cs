@@ -30,7 +30,7 @@ namespace UniSerializer
                 else if (typeof(Dictionary<,>) == type.GetGenericTypeDefinition())
                 {
                     var genericArgs = type.GetGenericArguments();
-                    Type instanceType = typeof(Dictionary<,>).MakeGenericType(genericArgs[0], genericArgs[1]);
+                    Type instanceType = typeof(DictionaryFormatter<,>).MakeGenericType(genericArgs[0], genericArgs[1]);
                     formatter = Activator.CreateInstance(instanceType) as IFormatter;
 
                 }

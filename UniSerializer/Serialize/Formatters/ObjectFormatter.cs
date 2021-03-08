@@ -2,13 +2,18 @@
 
 namespace UniSerializer
 {
-    public class ObjectFormatter<T> : IFormatter<T>
+    public class ObjectFormatter<T> : IFormatter<T> where T : new()
     {
         static MemberAccessorMap<T> memberMap = new MemberAccessorMap<T>();
 
         public override void Serialize(ISerializer serializer, ref T obj)
         {
-            serializer.StartObject(typeof(T));           
+            serializer.StartObject(typeof(T));
+
+            if (obj == null)
+            {
+                obj = new T();
+            }
 
             foreach (var it in memberMap)
             {

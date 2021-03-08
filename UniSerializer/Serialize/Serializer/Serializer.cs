@@ -83,6 +83,10 @@ namespace UniSerializer
             return false;
         }
 
+        public void SetElement(int index)
+        {
+        }
+
         public virtual void EndArray()
         {
         }
