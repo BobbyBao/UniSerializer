@@ -12,7 +12,7 @@ namespace UniSerializer
         System.Text.Json.Utf8JsonWriter jsonWriter;
         public void Save<T>(T obj, string path)
         {
-            using (var stream = new FileStream(path, FileMode.OpenOrCreate))
+            using (var stream = new FileStream(path, FileMode.Create))
             {
                 Save(obj, stream);
             }
@@ -26,8 +26,14 @@ namespace UniSerializer
             };
 
             jsonWriter = new System.Text.Json.Utf8JsonWriter(stream, option);
+            if(obj.GetType() != typeof(T))
+            {
+                object o = obj;
+                Serialize(ref o);
+            }
+            else 
+                Serialize(ref obj);
 
-            Serialize(ref obj);
             jsonWriter.Dispose();
         }
 
@@ -69,7 +75,7 @@ namespace UniSerializer
             jsonWriter.WriteNullValue();
         }
 
-        protected override void SerializePrimitive<T>(ref T val)
+        public override void SerializePrimitive<T>(ref T val)
         {
             switch (val)
             {
@@ -110,11 +116,19 @@ namespace UniSerializer
                     jsonWriter.WriteNumberValue(v);
                     break;
             }
-
-
+                
 
 
         }
 
+        public override void SerializeString(ref string val)
+        {
+            jsonWriter.WriteStringValue(val);
+        }
+
+        public override void SerializeBytes(ref byte[] val)
+        {
+            jsonWriter.WriteBase64StringValue(val);
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace UniSerializer
 {
-    public class ObjectFormatter<T> : IFormatter<T> where T : new()
+    public class ObjectFormatter<T> : Formatter<T> where T : new()
     {
         static MemberAccessorMap<T> memberMap = new MemberAccessorMap<T>();
 
@@ -15,13 +15,21 @@ namespace UniSerializer
                 obj = new T();
             }
 
-            foreach (var it in memberMap)
+            if(obj is ISerializable serializable)
             {
-                if (serializer.StartProperty(it.Key))
+                serializable.Serialize(serializer);
+            }
+            else
+            {
+                foreach (var it in memberMap)
                 {
-                    it.Value.Serialize(serializer, ref Unsafe.As<T, object>(ref obj));
-                    serializer.EndProperty();
+                    if (serializer.StartProperty(it.Key))
+                    {
+                        it.Value.Serialize(serializer, ref Unsafe.As<T, object>(ref obj));
+                        serializer.EndProperty();
+                    }
                 }
+
             }
 
             serializer.EndObject();

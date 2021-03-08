@@ -37,7 +37,7 @@ namespace UniSerializer
             }
         }
 
-        public virtual void SerializeObject<T>(ref T obj)
+        private void SerializeObject<T>(ref T obj)
         {
             if(obj == null)
             {
@@ -46,19 +46,8 @@ namespace UniSerializer
 
             if(obj != null)
             {
-                Type type = obj.GetType();
-
-                if (obj is ISerializable ser)
-                {
-                    StartObject(type);
-                    ser.Serialize(this);
-                    EndObject();
-                }
-                else
-                {                     
-                    FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, Object>(ref obj));           
-                }
-
+                Type type = obj.GetType();                    
+                FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, Object>(ref obj));           
             }
             else
                 FormatterCache<T>.Instance.Serialize(this, ref obj);
@@ -110,17 +99,21 @@ namespace UniSerializer
         {
         }
 
+        public virtual void SerializePrimitive<T>(ref T val)
+        {
+        }
+
+        public virtual void SerializeString(ref string val)
+        {
+        }
+
+        public virtual void SerializeBytes(ref byte[] val)
+        {
+        }
+
         protected virtual object CreateObject()
         {
             return default;
-        }
-
-        protected virtual void SerializePrimitive<T>(ref T val)
-        {
-        }
-
-        protected virtual void SerializeBytes<T>(ref byte[] val)
-        {
         }
 
     }

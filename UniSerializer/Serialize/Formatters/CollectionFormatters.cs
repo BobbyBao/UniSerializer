@@ -5,7 +5,7 @@ using System.Text;
 
 namespace UniSerializer
 {
-    public sealed class ArrayFormatter<T> : IFormatter<T[]>
+    public sealed class ArrayFormatter<T> : Formatter<T[]>
     {
         public override void Serialize(ISerializer serialzer, ref T[] obj)
         {
@@ -27,7 +27,7 @@ namespace UniSerializer
         }
     }
 
-    public class ListFormatter<T> : IFormatter<List<T>>
+    public class ListFormatter<T> : Formatter<List<T>>
     {
         public override void Serialize(ISerializer serialzer, ref List<T> obj)
         {
@@ -66,7 +66,7 @@ namespace UniSerializer
         }
     }
 
-    public class DictionaryFormatter<K, T> : IFormatter<Dictionary<K, T>>
+    public class DictionaryFormatter<K, T> : Formatter<Dictionary<K, T>>
     {
         public override void Serialize(ISerializer serialzer, ref Dictionary<K, T> obj)
         {
@@ -81,12 +81,13 @@ namespace UniSerializer
             if (serialzer.IsReading)
             {
                 obj.Clear();
-                for (int i = 0; i < len; i++)
+                for (int i = 0; i < len/2; i++)
                 {
                     K key = default;
                     T val = default;
-                    serialzer.SetElement(i);
+                    serialzer.SetElement(2 * i);
                     serialzer.Serialize(ref key);
+                    serialzer.SetElement(2 * i + 1);
                     serialzer.Serialize(ref val);
                     obj[key] = val;
                 }

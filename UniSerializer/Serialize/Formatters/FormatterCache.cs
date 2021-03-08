@@ -14,6 +14,21 @@ namespace UniSerializer
                 return formatter;
             }
 
+            if(type.IsEnum)
+            {
+                Type instanceType = typeof(EnumFormatter<>).MakeGenericType(type);
+                formatter = Activator.CreateInstance(instanceType) as IFormatter;
+            }
+            else if(type.IsPrimitive)
+            {
+                Type instanceType = typeof(PrimitiveFormatter<>).MakeGenericType(type);
+                formatter = Activator.CreateInstance(instanceType) as IFormatter;
+            }
+            else if(type == typeof(string))
+            {
+                formatter = new StringFormatter();
+            }
+
             if (type.IsArray)
             {
                 Type instanceType = typeof(ArrayFormatter<>).MakeGenericType(type.GetElementType());
@@ -49,12 +64,13 @@ namespace UniSerializer
 
     public class FormatterCache<T> : FormatterCache
     {
-        public static IFormatter<T> Instance { get; }
+        public static Formatter<T> Instance { get; }
         static FormatterCache()
         {
             Type type = typeof(T);
-            Instance = (IFormatter<T>)Get(type);
+            Instance = (Formatter<T>)Get(type);
 
         }
     }
+
 }

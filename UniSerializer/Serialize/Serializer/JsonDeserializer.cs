@@ -92,7 +92,11 @@ namespace UniSerializer
             currentNode = parentNodes[--nodeCount];            
         }
 
-        protected override void SerializePrimitive<T>(ref T val)
+        public override void SerializeNull()
+        {
+        }
+
+        public override void SerializePrimitive<T>(ref T val)
         {
             switch (val)
             {
@@ -134,6 +138,16 @@ namespace UniSerializer
                     break;
             }
 
+        }
+
+        public override void SerializeString(ref string val)
+        {
+            val = currentNode.GetString();
+        }
+
+        public override void SerializeBytes(ref byte[] val)
+        {
+            val = currentNode.GetBytesFromBase64();
         }
     }
 }

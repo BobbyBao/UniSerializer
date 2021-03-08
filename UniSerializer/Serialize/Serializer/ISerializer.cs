@@ -11,7 +11,6 @@
         bool IsReading { get; }
         void Serialize<T>(ref T val);
         void Serialize(ref object val);
-        void SerializeNull();
         void SerializeProperty<T>(string name, ref T val);
         bool StartObject(System.Type type);
         void EndObject();
@@ -20,5 +19,9 @@
         void EndArray();
         bool StartProperty(string name);
         void EndProperty();
+        void SerializeNull();
+        void SerializePrimitive<T>(ref T val);
+        void SerializeString(ref string val);
+        void SerializeBytes(ref byte[] val);
     }
 }
