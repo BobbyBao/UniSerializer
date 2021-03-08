@@ -14,6 +14,8 @@ namespace UniSerializer
         public List<float> FloatList { get; set; }
         public Dictionary<string, string> StringDict { get; set; }
 
+        public List<AA> Children { get; set; }
+
         public void Accept(Serializer visitor)
         {
             visitor.SerializeProperty("floatVal", ref floatVal);
@@ -26,6 +28,7 @@ namespace UniSerializer
         static void Main(string[] args)
         {
             Random r = new Random();
+
             var aa = new AA();
             aa.IntArray = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
@@ -43,6 +46,9 @@ namespace UniSerializer
                 ["Key2"] = "Value2",
                 ["Key3"] = "Value3",
             };
+
+            aa.Children = new List<AA>();
+            aa.Children.Add(new AA());
 
             new JsonSerializer().Save((object)aa, "test.json");
 
