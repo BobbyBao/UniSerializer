@@ -28,7 +28,11 @@ namespace UniSerializer
             var aa = new AA();
 
             new JsonSerializer().Save((object)aa, "test.json");
-           
+
+            var obj = new JsonDeserializer().Load<AA>("test.json");
+
+            new JsonSerializer().Save((object)aa, "test1.json");
+
         }
     }
 }

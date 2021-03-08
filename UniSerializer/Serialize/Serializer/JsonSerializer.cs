@@ -14,21 +14,28 @@ namespace UniSerializer
         {
             using (var stream = new FileStream(path, FileMode.OpenOrCreate))
             {
-                JsonWriterOptions option = new JsonWriterOptions
-                {
-                    Indented = true,
-                };
-
-                jsonWriter = new System.Text.Json.Utf8JsonWriter(stream, option);
-               
-                Serialize(ref obj);
-                jsonWriter.Dispose();
+                Save(obj, stream);
             }
         }
 
-        public override void StartObject()
+        public void Save<T>(T obj, Stream stream)
+        {
+            JsonWriterOptions option = new JsonWriterOptions
+            {
+                Indented = true,
+            };
+
+            jsonWriter = new System.Text.Json.Utf8JsonWriter(stream, option);
+
+            Serialize(ref obj);
+            jsonWriter.Dispose();
+        }
+
+        public override bool StartObject(System.Type type)
         {               
             jsonWriter.WriteStartObject();
+            jsonWriter.WriteString("$type", type.ToString());
+            return true;
         }
 
         public override void EndObject()
@@ -36,9 +43,10 @@ namespace UniSerializer
             jsonWriter.WriteEndObject();
         }
 
-        public override void StartArray(ref int len)
+        public override bool StartArray(System.Type type, ref int len)
         {               
             jsonWriter.WriteStartArray();
+            return true;
         }
 
         public override void EndArray()
@@ -46,30 +54,60 @@ namespace UniSerializer
             jsonWriter.WriteEndArray();
         }
 
-        public override void StartProperty(string name)
+        public override bool StartProperty(string name)
         {
             jsonWriter.WritePropertyName(name);
+            return true;
         }
 
         public override void EndProperty()
         {
         }
 
+        public override void SerializeNull()
+        {
+            jsonWriter.WriteNullValue();
+        }
+
         protected override void SerializePrimitive<T>(ref T val)
         {
             switch (val)
             {
-                case int intVal:
-                    jsonWriter.WriteNumberValue(intVal);
+                case bool v:
+                    jsonWriter.WriteBooleanValue(v);
                     break;
-                case uint uintVal:
-                    jsonWriter.WriteNumberValue(uintVal);
+                case int v:
+                    jsonWriter.WriteNumberValue(v);
                     break;
-                case float floatVal:
-                    jsonWriter.WriteNumberValue(floatVal);
+                case uint v:
+                    jsonWriter.WriteNumberValue(v);
                     break;
-                case double doubleVal:
-                    jsonWriter.WriteNumberValue(doubleVal);
+                case float v:
+                    jsonWriter.WriteNumberValue(v);
+                    break;
+                case double v:
+                    jsonWriter.WriteNumberValue(v);
+                    break;
+                case long v:
+                    jsonWriter.WriteNumberValue(v);
+                    break;
+                case ulong v:
+                    jsonWriter.WriteNumberValue(v);
+                    break;
+                case short v:
+                    jsonWriter.WriteNumberValue(v);
+                    break;
+                case ushort v:
+                    jsonWriter.WriteNumberValue(v);
+                    break;
+                case sbyte v:
+                    jsonWriter.WriteNumberValue(v);
+                    break;
+                case byte v:
+                    jsonWriter.WriteNumberValue(v);
+                    break;
+                case decimal v:
+                    jsonWriter.WriteNumberValue(v);
                     break;
             }
 

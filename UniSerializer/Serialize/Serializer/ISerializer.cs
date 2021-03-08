@@ -11,14 +11,13 @@
         bool IsReading { get; }
         void Serialize<T>(ref T val);
         void Serialize(ref object val);
-        void SerializeObject<T>(ref T val);
         void SerializeNull();
         void SerializeProperty<T>(string name, ref T val);
-        void StartObject();
+        bool StartObject(System.Type type);
         void EndObject();
-        void StartArray(ref int len);
+        bool StartArray(System.Type type, ref int len);
         void EndArray();
-        void StartProperty(string name);
+        bool StartProperty(string name);
         void EndProperty();
     }
 }

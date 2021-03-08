@@ -39,15 +39,21 @@ namespace UniSerializer
 
         public virtual void SerializeObject<T>(ref T obj)
         {
+            if(obj == null)
+            {
+                obj = (T)CreateObject();
+            }
+
+            Type type = obj.GetType();
+
             if (obj is ISerializable ser)
             {
-                StartObject();
+                StartObject(type);
                 ser.Serialize(this);
                 EndObject();
             }
             else
             {
-                Type type = obj.GetType();
                 if (type != typeof(T))
                 {
                     FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, Object>(ref obj));
@@ -60,31 +66,36 @@ namespace UniSerializer
 
         public virtual void SerializeProperty<T>(string name, ref T val)
         {
-            StartProperty(name);
+            if(StartProperty(name))
+            {
+                Serialize(ref val);
 
-            Serialize(ref val);
+                EndProperty();
+            }
 
-            EndProperty();
         }
 
-        public virtual void StartObject()
+        public virtual bool StartObject(System.Type type)
         {
+            return false;
         }
 
         public virtual void EndObject()
         {
         }
 
-        public virtual void StartArray(ref int len)
+        public virtual bool StartArray(System.Type type, ref int len)
         {
+            return false;
         }
 
         public virtual void EndArray()
         {
         }
 
-        public virtual void StartProperty(string name)
+        public virtual bool StartProperty(string name)
         {
+            return false;
         }
 
         public virtual void EndProperty()
@@ -93,6 +104,11 @@ namespace UniSerializer
 
         public virtual void SerializeNull()
         {
+        }
+
+        protected virtual object CreateObject()
+        {
+            return default;
         }
 
         protected virtual void SerializePrimitive<T>(ref T val)
