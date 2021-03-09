@@ -58,8 +58,14 @@ namespace UniSerializer
         {
         }
 
-        public override bool StartArray(System.Type type, ref int len)
+        public override bool StartArray<T>(ref T array, ref int len)
         {
+            if (currentNode.ValueKind == JsonValueKind.Null)
+            {
+                array = default;
+                return false;
+            }
+
             if (currentNode.ValueKind != JsonValueKind.Array)
             {
                 System.Diagnostics.Debug.Assert(false);
@@ -68,7 +74,7 @@ namespace UniSerializer
 
             len = currentNode.GetArrayLength();
             parentNodes[nodeCount++] = currentNode;
-            return false;
+            return true;
         }
 
         public override void SetElement(int index)

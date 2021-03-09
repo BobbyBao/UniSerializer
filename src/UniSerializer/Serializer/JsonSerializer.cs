@@ -59,8 +59,14 @@ namespace UniSerializer
             jsonWriter.WriteEndObject();
         }
 
-        public override bool StartArray(System.Type type, ref int len)
-        {               
+        public override bool StartArray<T>(ref T array, ref int len)
+        {
+            if(array == null)
+            {
+                jsonWriter.WriteNullValue();
+                return false;
+            }
+            
             jsonWriter.WriteStartArray();
             return true;
         }

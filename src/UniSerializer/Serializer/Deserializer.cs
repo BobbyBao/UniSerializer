@@ -73,7 +73,7 @@ namespace UniSerializer
         {
         }
 
-        public virtual bool StartArray(System.Type type, ref int len)
+        public virtual bool StartArray<T>(ref T array, ref int len)
         {
             return false;
         }

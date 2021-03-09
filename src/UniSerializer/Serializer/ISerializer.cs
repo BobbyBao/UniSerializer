@@ -14,7 +14,7 @@
         void SerializeProperty<T>(string name, ref T val);
         bool StartObject<T>(ref T obj);
         void EndObject();
-        bool StartArray(System.Type type, ref int len);
+        bool StartArray<T>(ref T array, ref int len);
         void SetElement(int index);
         void EndArray();
         bool StartProperty(string name);

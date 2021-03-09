@@ -10,7 +10,7 @@ namespace UniSerializer
         public override void Serialize(ISerializer serialzer, ref T[] obj)
         {
             int len = obj?.Length ?? 0;
-            if(!serialzer.StartArray(typeof(T[]), ref len))
+            if(!serialzer.StartArray(ref obj, ref len))
             {
                 return;
             }
@@ -35,7 +35,10 @@ namespace UniSerializer
         public override void Serialize(ISerializer serialzer, ref List<T> obj)
         {
             int len = obj?.Count ?? 0;
-            serialzer.StartArray(typeof(List<T>), ref len);
+            if(!serialzer.StartArray(ref obj, ref len))
+            {
+                return;
+            }
 
             if (obj == null)
             {
@@ -74,7 +77,10 @@ namespace UniSerializer
         public override void Serialize(ISerializer serialzer, ref Dictionary<K, T> obj)
         {
             int len = obj?.Count ?? 0;
-            serialzer.StartArray(typeof(Dictionary<K, T>), ref len);
+            if(!serialzer.StartArray(ref obj, ref len))
+            {
+                return;
+            }
 
             if (obj == null)
             {
