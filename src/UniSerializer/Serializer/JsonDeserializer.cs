@@ -128,6 +128,9 @@ namespace UniSerializer
                 case ushort v:
                     Unsafe.As<T, ushort>(ref val) = currentNode.GetUInt16();
                     break;
+                case char v:
+                    Unsafe.As<T, char>(ref val) = (char)currentNode.GetUInt16();
+                    break;
                 case sbyte v:
                     Unsafe.As<T, sbyte>(ref val) = currentNode.GetSByte();
                     break;

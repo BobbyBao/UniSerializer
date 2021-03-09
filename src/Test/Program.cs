@@ -15,6 +15,7 @@ namespace UniSerializer
         int[] intArray;
 
         public Vec2 Pos { get; set; }
+        public Object Null { get; set; }
 
         public float FloatVal { get => floatVal; set => floatVal = value; }
         public int[] IntArray { get => intArray; set => intArray = value; }

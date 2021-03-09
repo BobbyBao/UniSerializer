@@ -109,6 +109,9 @@ namespace UniSerializer
                 case ushort v:
                     jsonWriter.WriteNumberValue(v);
                     break;
+                case char v:
+                    jsonWriter.WriteNumberValue(v);
+                    break;
                 case sbyte v:
                     jsonWriter.WriteNumberValue(v);
                     break;
