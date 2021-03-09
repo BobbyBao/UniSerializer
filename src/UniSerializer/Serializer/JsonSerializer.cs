@@ -40,7 +40,10 @@ namespace UniSerializer
         public override bool StartObject(System.Type type)
         {               
             jsonWriter.WriteStartObject();
-            jsonWriter.WriteString("$type", type.AssemblyQualifiedName);
+            if (!type.IsValueType)
+            {
+                jsonWriter.WriteString("$type", type.AssemblyQualifiedName);
+            }
             return true;
         }
 

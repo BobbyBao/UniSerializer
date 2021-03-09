@@ -3,10 +3,18 @@ using System.Collections.Generic;
 
 namespace UniSerializer
 {
+    public struct Vec2
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+    }
+
     public class AA
     {
         float floatVal;
         int[] intArray;
+
+        public Vec2 Pos { get; set; }
 
         public float FloatVal { get => floatVal; set => floatVal = value; }
         public int[] IntArray { get => intArray; set => intArray = value; }
@@ -30,6 +38,11 @@ namespace UniSerializer
             Random r = new Random();
 
             var aa = new AA();
+            aa.Pos = new Vec2
+            {
+                X = 111, Y = 222
+            };
+
             aa.IntArray = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
             aa.FloatList = new List<float>();

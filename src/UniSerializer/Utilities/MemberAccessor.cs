@@ -19,8 +19,8 @@ namespace UniSerializer
             return false;
         }
 
-        public abstract bool Get(ref object obj, out object value);
-        public abstract bool Set(ref object obj, object value);
+        public virtual bool Get(ref object obj, out object value) { value = default; return false; }
+        public virtual bool Set(ref object obj, object value) { return false; }
 
         public abstract void Serialize(ISerializer serializer, ref object obj);
 
@@ -104,8 +104,8 @@ namespace UniSerializer
         public ValueMemberAccessor(PropertyInfo propertyInfo)
         {
             this.memberInfo = propertyInfo;
-            getter = EmitUtilities.CreateInstancePropertyGetter<K, T>(propertyInfo);
-            setter = EmitUtilities.CreateInstancePropertySetter<K, T>(propertyInfo);
+            getter = (ValueGetter<K, T>)Delegate.CreateDelegate(typeof(ValueGetter<K, T>), propertyInfo.GetMethod);
+            setter = (ValueSetter<K, T>)Delegate.CreateDelegate(typeof(ValueSetter<K, T>), propertyInfo.SetMethod);
         }
 
         public override bool Get(ref object obj, out object val)
@@ -148,37 +148,6 @@ namespace UniSerializer
                 }
             }
         }
-
-    }
-    public class MemberAccessorMap<K> : Dictionary<string, MemberAccessor>
-    {
-        Type type = typeof(K);
-
-        public MemberAccessorMap()
-        {
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            foreach (var p in properties)
-            {
-                if (p.GetMethod == null || p.SetMethod == null)
-                {
-                    continue;
-                }
-
-                if (p.IsDefined(typeof(NonSerializedAttribute)))
-                {
-                    continue;
-                }
-
-                Add(p.Name, CreatePropertyAccessor(p));
-            }
-        }
-
-        public static MemberAccessor CreatePropertyAccessor(PropertyInfo propertyInfo)
-        {
-            Type instanceType = typeof(ObjectMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
-            return (MemberAccessor)Activator.CreateInstance(instanceType, propertyInfo);
-        }
-
 
     }
 

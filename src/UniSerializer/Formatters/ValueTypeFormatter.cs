@@ -1,8 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace UniSerializer
 {
-    public class ObjectFormatter<T> : Formatter<T> where T : new()
+    public class ValueTypeFormatter<T> : Formatter<T> where T : new()
     {
         static MetaInfo memberMap = MetaInfo.Get<T>();
 
@@ -10,12 +13,7 @@ namespace UniSerializer
         {
             serializer.StartObject(typeof(T));
 
-            if (obj == null)
-            {
-                obj = new T();
-            }
-
-            if(obj is ISerializable serializable)
+            if (obj is ISerializable serializable)
             {
                 serializable.Serialize(serializer);
             }
@@ -34,7 +32,5 @@ namespace UniSerializer
 
             serializer.EndObject();
         }
-
     }
-
 }
