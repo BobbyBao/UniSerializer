@@ -15,14 +15,15 @@ namespace UniSerializer
         JsonElement currentNode;
         public T Load<T>(string path) where T : new()
         {
-            using var stream = new FileStream(path, FileMode.Open);
-
-            doc = JsonDocument.Parse(stream);
-            parentNodes[nodeCount++] = doc.RootElement;
-            currentNode = doc.RootElement;
-            T obj = default;
-            Serialize(ref obj);
-            return obj;
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                doc = JsonDocument.Parse(stream);
+                parentNodes[nodeCount++] = doc.RootElement;
+                currentNode = doc.RootElement;
+                T obj = default;
+                Serialize(ref obj);
+                return obj;
+            }
         }
 
         protected override object CreateObject()
