@@ -37,8 +37,15 @@ namespace UniSerializer
             jsonWriter.Dispose();
         }
 
-        public override bool StartObject(System.Type type)
-        {               
+        public override bool StartObject<T>(ref T obj)
+        {
+            if(obj == null)
+            {
+                SerializeNull();
+                return false;
+            }
+
+            var type = obj.GetType();
             jsonWriter.WriteStartObject();
             if (!type.IsValueType)
             {

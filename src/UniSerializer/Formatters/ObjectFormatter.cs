@@ -8,10 +8,13 @@ namespace UniSerializer
 
         public override void Serialize(ISerializer serializer, ref T obj)
         {
-            serializer.StartObject(typeof(T));
+            if(!serializer.StartObject(ref obj))
+            {
+                return;
+            }
 
             if (obj == null)
-            {
+            {                    
                 obj = new T();
             }
 

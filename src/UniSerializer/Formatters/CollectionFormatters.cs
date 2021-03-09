@@ -10,7 +10,10 @@ namespace UniSerializer
         public override void Serialize(ISerializer serialzer, ref T[] obj)
         {
             int len = obj?.Length ?? 0;
-            serialzer.StartArray(typeof(T[]), ref len);
+            if(!serialzer.StartArray(typeof(T[]), ref len))
+            {
+                return;
+            }
 
             if (obj == null)
             {

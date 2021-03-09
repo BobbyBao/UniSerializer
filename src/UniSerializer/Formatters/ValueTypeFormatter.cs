@@ -11,7 +11,7 @@ namespace UniSerializer
 
         public override void Serialize(ISerializer serializer, ref T obj)
         {
-            serializer.StartObject(typeof(T));
+            serializer.StartObject(ref obj);
 
             if (obj is ISerializable serializable)
             {

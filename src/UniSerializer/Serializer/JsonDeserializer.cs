@@ -43,8 +43,14 @@ namespace UniSerializer
             return Activator.CreateInstance(type);
         }
 
-        public override bool StartObject(System.Type type)
+        public override bool StartObject<T>(ref T obj)
         {
+            if(currentNode.ValueKind == JsonValueKind.Null)
+            {
+                obj = default;
+                return false;
+            }
+
             return true;
         }
 

@@ -64,7 +64,7 @@ namespace UniSerializer
 
         }
 
-        public virtual bool StartObject(System.Type type)
+        public virtual bool StartObject<T>(ref T obj)
         {
             return false;
         }

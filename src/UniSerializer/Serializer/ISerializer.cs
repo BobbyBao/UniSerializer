@@ -12,7 +12,7 @@
         void Serialize<T>(ref T val);
         void Serialize(ref object val);
         void SerializeProperty<T>(string name, ref T val);
-        bool StartObject(System.Type type);
+        bool StartObject<T>(ref T obj);
         void EndObject();
         bool StartArray(System.Type type, ref int len);
         void SetElement(int index);
