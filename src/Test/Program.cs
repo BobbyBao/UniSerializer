@@ -3,6 +3,13 @@ using System.Collections.Generic;
 
 namespace UniSerializer
 {
+    public class RefObject
+    {
+        public string Name { get; set; }
+        public int ID { get; set; }
+
+    }
+
     public struct StructObject
     {
         public int X { get; set; }
@@ -10,8 +17,11 @@ namespace UniSerializer
 
         public StructObject[] StructObjects { get; set; }
 
+        public RefObject RefObject { get; set; }
+
         public SerializeableObject SerializeableObject { get; set; }
     }
+
 
     public class ClassObject
     {
@@ -29,9 +39,6 @@ namespace UniSerializer
 
         public List<ClassObject> Children { get; set; }
 
-        public void Accept(Serializer visitor)
-        {
-        }
     }
 
     public class SerializeableObject : ISerializable
@@ -52,16 +59,43 @@ namespace UniSerializer
         {
             Random r = new Random();
 
+            var refObj1 = new RefObject
+            {
+                Name = "RefObject1", ID = 10001,
+            };
+
+            var refObj2 = new RefObject
+            {
+                Name = "RefObject2",
+                ID = 10002,
+            };
+
+
             var aa = new ClassObject();
             aa.Pos = new StructObject
             {
                 X = 111, Y = 111,
-
+                RefObject =  refObj1,
                 StructObjects = new StructObject[]
                 {
-                    new StructObject{ X = 222, Y = 222, },
-                    new StructObject{ X = 333, Y = 333, },
-                    new StructObject{ X = 444, Y = 444, }
+                    new StructObject
+                    { 
+                        X = 222, Y = 222,
+                        RefObject =  refObj1,
+
+                    },
+
+                    new StructObject
+                    {
+                        X = 333, Y = 333,
+                        RefObject =  refObj2,
+                    },
+
+                    new StructObject
+                    {
+                        X = 444, Y = 444,
+                        RefObject =  refObj2,
+                    }
 
                 },
                 SerializeableObject = new SerializeableObject()

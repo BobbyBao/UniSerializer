@@ -45,11 +45,20 @@ namespace UniSerializer
                 return false;
             }
 
+            if(Session.GetRef(obj, out var id))
+            {
+                string refID = $"$ref|{id}";
+                SerializeString(ref refID);
+                return false;
+            }
+
             var type = obj.GetType();
             jsonWriter.WriteStartObject();
             if (!type.IsValueType)
             {
                 jsonWriter.WriteString("$type", type.FullName);
+                id = Session.AddRefObject(obj);
+                jsonWriter.WriteNumber("$id", id);
             }
             return true;
         }

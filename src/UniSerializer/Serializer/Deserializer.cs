@@ -10,7 +10,7 @@ namespace UniSerializer
         public bool IsReading { get; } = true;
         public bool IsWriting => !IsReading;
 
-        public SerializeSession SerializeSession { get; set; }
+        public SerializeSession Session { get; } = new SerializeSession();
 
         public virtual void Serialize<T>(ref T val)
         {
@@ -43,7 +43,13 @@ namespace UniSerializer
         {
             if(obj == null)
             {
-                obj = (T)CreateObject();
+                if(!CreateObject(out var newObj))
+                {
+                    obj = (T)newObj;
+                    return;
+                }
+
+                obj = (T)newObj;
             }
 
             if(obj != null)
@@ -113,9 +119,10 @@ namespace UniSerializer
         {
         }
 
-        protected virtual object CreateObject()
+        protected virtual bool CreateObject(out object obj)
         {
-            return default;
+            obj = default;
+            return true;
         }
 
     }

@@ -10,7 +10,7 @@ namespace UniSerializer
     {
         public bool IsReading { get; } = false;
         public bool IsWriting => !IsReading;
-        public SerializeSession SerializeSession { get; set; }
+        public SerializeSession Session { get; } = new SerializeSession();
 
         public virtual void Serialize<T>(ref T val)
         {

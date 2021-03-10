@@ -26,25 +26,60 @@ namespace UniSerializer
             }
         }
 
-        protected override object CreateObject()
+        protected override bool CreateObject(out object obj)
         {
+            if(currentNode.ValueKind == JsonValueKind.String)
+            {
+                var str = currentNode.GetString();
+                if(str.StartsWith("$ref|"))
+                {
+                    var id = int.Parse(str.AsSpan(5));
+                    obj = Session.GetRefObject(id);
+                    return false;
+                }
+                else
+                {
+                    obj = null;
+                    return true;
+                }
+
+            }
+
             if(currentNode.ValueKind != JsonValueKind.Object)
             {
-                return null;
+                obj = null;
+                return true;
             }
 
             if(!currentNode.TryGetProperty("$type" ,out var typeName))
             {
-                return null;
+                obj = null;
+                return true;
             }
 
             var type = TypeUtilities.GetType(typeName.GetString());
             if(type == null)
             {
-                return null;
+                obj = null;
+                return true;
             }
 
-            return Activator.CreateInstance(type);
+
+
+            obj = Activator.CreateInstance(type);
+
+            if (currentNode.TryGetProperty("$id", out var idNode))
+            {
+                var id = idNode.GetInt32();
+                var id1 = Session.AddRefObject(obj);
+                System.Diagnostics.Debug.Assert(id == id1);
+            }
+            else
+            {
+                //
+            }
+
+            return true;
         }
 
         public override bool StartObject<T>(ref T obj)

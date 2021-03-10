@@ -17,16 +17,19 @@ namespace UniSerializer
             return id;
         }
 
-        public bool GetRefObject(int id, out object obj)
+        public bool GetRef(object obj, out int id)
+        {
+            return object2ID.TryGetValue(obj, out id);
+        }
+
+        public object GetRefObject(int id)
         {
             if(id >= ojectList.Count)
             {
-                obj = null;
-                return false;
+                return null;
             }
 
-            obj = ojectList[id];
-            return true;
+            return ojectList[id];            
         }
 
 
