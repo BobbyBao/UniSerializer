@@ -12,18 +12,15 @@ namespace UniSerializer
         JsonDocument doc;
         JsonElement[] parentNodes = new JsonElement[32];
         int nodeCount = 0;
-        JsonElement currentNode;
-        public T Load<T>(string path) where T : new()
+        JsonElement currentNode;        
+        public override T Load<T>(Stream stream)
         {
-            using (var stream = new FileStream(path, FileMode.Open))
-            {
-                doc = JsonDocument.Parse(stream);
-                parentNodes[nodeCount++] = doc.RootElement;
-                currentNode = doc.RootElement;
-                T obj = default;
-                Serialize(ref obj);
-                return obj;
-            }
+            doc = JsonDocument.Parse(stream);
+            parentNodes[nodeCount++] = doc.RootElement;
+            currentNode = doc.RootElement;
+            T obj = default;
+            Serialize(ref obj);
+            return obj;
         }
 
         protected override bool CreateObject(out object obj)
@@ -63,8 +60,6 @@ namespace UniSerializer
                 obj = null;
                 return true;
             }
-
-
 
             obj = Activator.CreateInstance(type);
 

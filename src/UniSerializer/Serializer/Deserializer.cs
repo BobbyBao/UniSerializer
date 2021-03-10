@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -11,6 +12,19 @@ namespace UniSerializer
         public bool IsWriting => !IsReading;
 
         public SerializeSession Session { get; } = new SerializeSession();
+
+        public T Load<T>(string path) where T : new()
+        {
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                return Load<T>(stream);
+            }
+        }
+
+        public virtual T Load<T>(Stream stream)
+        {
+            return default;
+        }
 
         public virtual void Serialize<T>(ref T val)
         {

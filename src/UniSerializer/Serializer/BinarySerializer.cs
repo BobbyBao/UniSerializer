@@ -1,85 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.Json;
 
 namespace UniSerializer
 {
-    public class JsonSerializer : Serializer
+    public class BinarySerializer : Serializer
     {
-        System.Text.Json.Utf8JsonWriter jsonWriter;
+        Stream stream;
         public override void Save<T>(T obj, Stream stream)
         {
-            JsonWriterOptions option = new JsonWriterOptions
-            {
-                Indented = true,
-            };
+            this.stream = stream;
 
-            jsonWriter = new System.Text.Json.Utf8JsonWriter(stream, option);
-            if(obj.GetType() != typeof(T))
+            if (obj.GetType() != typeof(T))
             {
                 object o = obj;
                 Serialize(ref o);
             }
-            else 
+            else
                 Serialize(ref obj);
 
-            jsonWriter.Dispose();
         }
 
         public override bool StartObject<T>(ref T obj)
         {
-            if(obj == null)
+            if (obj == null)
             {
                 SerializeNull();
                 return false;
             }
 
-            if(Session.GetRef(obj, out var id))
+            if (Session.GetRef(obj, out var id))
             {
                 string refID = $"$ref|{id}";
                 SerializeString(ref refID);
                 return false;
             }
 
-            var type = obj.GetType();
-            jsonWriter.WriteStartObject();
-            if (!type.IsValueType)
-            {
-                jsonWriter.WriteString("$type", type.FullName);
-                id = Session.AddRefObject(obj);
-                jsonWriter.WriteNumber("$id", id);
-            }
+//             var type = obj.GetType();
+//             jsonWriter.WriteStartObject();
+//             if (!type.IsValueType)
+//             {
+//                 jsonWriter.WriteString("$type", type.FullName);
+//                 id = Session.AddRefObject(obj);
+//                 jsonWriter.WriteNumber("$id", id);
+//             }
             return true;
         }
 
         public override void EndObject()
         {
-            jsonWriter.WriteEndObject();
+           // jsonWriter.WriteEndObject();
         }
 
         public override bool StartArray<T>(ref T array, ref int len)
         {
-            if(array == null)
+            if (array == null)
             {
-                jsonWriter.WriteNullValue();
+                //jsonWriter.WriteNullValue();
                 return false;
             }
-            
-            jsonWriter.WriteStartArray();
+
+            //jsonWriter.WriteStartArray();
             return true;
         }
 
         public override void EndArray()
         {
-            jsonWriter.WriteEndArray();
+            //jsonWriter.WriteEndArray();
         }
 
         public override bool StartProperty(string name)
         {
-            jsonWriter.WritePropertyName(name);
+            //jsonWriter.WritePropertyName(name);
             return true;
         }
 
@@ -89,11 +82,12 @@ namespace UniSerializer
 
         public override void SerializeNull()
         {
-            jsonWriter.WriteNullValue();
+            //jsonWriter.WriteNullValue();
         }
 
         public override void SerializePrimitive<T>(ref T val)
         {
+            /*
             switch (val)
             {
                 case bool v:
@@ -136,19 +130,17 @@ namespace UniSerializer
                     jsonWriter.WriteNumberValue(v);
                     break;
             }
-                
-
-
+            */
         }
 
         public override void SerializeString(ref string val)
         {
-            jsonWriter.WriteStringValue(val);
+            //jsonWriter.WriteStringValue(val);
         }
 
         public override void SerializeBytes(ref byte[] val)
         {
-            jsonWriter.WriteBase64StringValue(val);
+            //jsonWriter.WriteBase64StringValue(val);
         }
     }
 }

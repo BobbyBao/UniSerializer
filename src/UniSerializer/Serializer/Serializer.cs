@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -11,6 +12,18 @@ namespace UniSerializer
         public bool IsReading { get; } = false;
         public bool IsWriting => !IsReading;
         public SerializeSession Session { get; } = new SerializeSession();
+
+        public void Save<T>(T obj, string path)
+        {
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                Save(obj, stream);
+            }
+        }
+
+        public virtual void Save<T>(T obj, Stream stream)
+        {
+        }
 
         public virtual void Serialize<T>(ref T val)
         {
