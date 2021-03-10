@@ -7,7 +7,7 @@ namespace UniSerializer
 {
     public class ValueTypeFormatter<T> : Formatter<T> where T : new()
     {
-        static MetaInfo memberMap = MetaInfo.Get<T>();
+        static MetaInfo metaInfo = MetaInfo.Get<T>();
 
         public override void Serialize(ISerializer serializer, ref T obj)
         {
@@ -19,7 +19,7 @@ namespace UniSerializer
             }
             else
             {
-                foreach (var it in memberMap)
+                foreach (var it in metaInfo)
                 {
                     if (serializer.StartProperty(it.Key))
                     {

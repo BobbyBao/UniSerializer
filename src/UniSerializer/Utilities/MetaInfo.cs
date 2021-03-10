@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace UniSerializer
@@ -14,6 +15,7 @@ namespace UniSerializer
         {
             this.type = type;
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var hash = new HashCode();
             foreach (var p in properties)
             {
                 if (p.GetMethod == null || p.SetMethod == null)
@@ -26,11 +28,20 @@ namespace UniSerializer
                     continue;
                 }
 
+                if (p.IsDefined(typeof(IgnoreDataMemberAttribute)))
+                {
+                    continue;
+                }
+
                 Add(p.Name, CreatePropertyAccessor(type.IsValueType, p));
+                hash.Add(p.Name);
             }
+
+            HashCode = hash.ToHashCode();
         }
 
         public Type Type => type;
+        public int HashCode { get; }
 
         public static MemberAccessor CreatePropertyAccessor(bool valueType, PropertyInfo propertyInfo)
         {

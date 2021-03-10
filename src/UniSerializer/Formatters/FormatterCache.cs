@@ -73,9 +73,7 @@ namespace UniSerializer
         public static Formatter<T> Instance { get; }
         static FormatterCache()
         {
-            Type type = typeof(T);
-            Instance = (Formatter<T>)Get(type);
-
+            Instance = (Formatter<T>)Get(typeof(T));
         }
     }
 

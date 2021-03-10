@@ -10,6 +10,8 @@ namespace UniSerializer
         public bool IsReading { get; } = true;
         public bool IsWriting => !IsReading;
 
+        public SerializeSession SerializeSession { get; set; }
+
         public virtual void Serialize<T>(ref T val)
         {
             Type type = typeof(T);

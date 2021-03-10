@@ -90,13 +90,13 @@ namespace UniSerializer
             if (serialzer.IsReading)
             {
                 obj.Clear();
-                for (int i = 0; i < len/2; i++)
+                for (int i = 0; i < len;)
                 {
                     K key = default;
                     T val = default;
-                    serialzer.SetElement(2 * i);
+                    serialzer.SetElement(i++);
                     serialzer.Serialize(ref key);
-                    serialzer.SetElement(2 * i + 1);
+                    serialzer.SetElement(i++);
                     serialzer.Serialize(ref val);
                     obj[key] = val;
                 }
@@ -108,7 +108,6 @@ namespace UniSerializer
                 {
                     K k = kvp.Key;
                     T v = kvp.Value;
-                    //serialzer.SetElement(i);
                     serialzer.Serialize(ref k);
                     serialzer.Serialize(ref v);
                 }

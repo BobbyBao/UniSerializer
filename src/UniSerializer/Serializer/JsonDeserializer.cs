@@ -38,7 +38,11 @@ namespace UniSerializer
                 return null;
             }
 
-            var type = Type.GetType(typeName.GetString());
+            var type = TypeUtilities.GetType(typeName.GetString());
+            if(type == null)
+            {
+                return null;
+            }
 
             return Activator.CreateInstance(type);
         }

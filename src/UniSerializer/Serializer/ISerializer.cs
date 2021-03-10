@@ -9,6 +9,7 @@
     public interface ISerializer
     {
         bool IsReading { get; }
+        SerializeSession SerializeSession { get; set; }
         void Serialize<T>(ref T val);
         void Serialize(ref object val);
         void SerializeProperty<T>(string name, ref T val);

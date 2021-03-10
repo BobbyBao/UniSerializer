@@ -9,28 +9,16 @@ namespace UniSerializer
     public abstract class MemberAccessor
     {
         protected MemberInfo memberInfo;
-
-        public object defaultVal;
-
-        public string Name => memberInfo.Name;
-
-        public virtual bool IsDefault(object val)
-        {
-            return false;
-        }
-
         public virtual bool Get(ref object obj, out object value) { value = default; return false; }
         public virtual bool Set(ref object obj, object value) { return false; }
 
         public abstract void Serialize(ISerializer serializer, ref object obj);
-
     }
-
 
     public class ObjectMemberAccessor<K, T> : MemberAccessor
     {
-        public Func<K, T> getter;
-        public Action<K, T> setter;
+        private Func<K, T> getter;
+        private Action<K, T> setter;
 
         public ObjectMemberAccessor(FieldInfo fieldInfo)
         {
@@ -91,8 +79,8 @@ namespace UniSerializer
 
     public class ValueMemberAccessor<K, T> : MemberAccessor
     {
-        public ValueGetter<K, T> getter;
-        public ValueSetter<K, T> setter;
+        private ValueGetter<K, T> getter;
+        private ValueSetter<K, T> setter;
 
         public ValueMemberAccessor(FieldInfo fieldInfo)
         {

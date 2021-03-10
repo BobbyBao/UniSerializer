@@ -49,7 +49,7 @@ namespace UniSerializer
             jsonWriter.WriteStartObject();
             if (!type.IsValueType)
             {
-                jsonWriter.WriteString("$type", type.AssemblyQualifiedName);
+                jsonWriter.WriteString("$type", type.FullName);
             }
             return true;
         }
