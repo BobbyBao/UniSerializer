@@ -13,11 +13,11 @@
         void Serialize<T>(ref T val);
         bool StartObject<T>(ref T obj);
         void EndObject();
+        bool StartProperty(string name);
+        void EndProperty();
         bool StartArray<T>(ref T array, ref int len);
         void SetElement(int index);
         void EndArray();
-        bool StartProperty(string name);
-        void EndProperty();
         void SerializeNull();
         void SerializePrimitive<T>(ref T val);
         void SerializeString(ref string val);

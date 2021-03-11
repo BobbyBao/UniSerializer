@@ -60,6 +60,16 @@ namespace UniSerializer
             jsonWriter.WriteEndObject();
         }
 
+        public override bool StartProperty(string name)
+        {
+            jsonWriter.WritePropertyName(name);
+            return true;
+        }
+
+        public override void EndProperty()
+        {
+        }
+
         public override bool StartArray<T>(ref T array, ref int len)
         {
             if(array == null)
@@ -75,16 +85,6 @@ namespace UniSerializer
         public override void EndArray()
         {
             jsonWriter.WriteEndArray();
-        }
-
-        public override bool StartProperty(string name)
-        {
-            jsonWriter.WritePropertyName(name);
-            return true;
-        }
-
-        public override void EndProperty()
-        {
         }
 
         public override void SerializeNull()

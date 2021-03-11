@@ -31,7 +31,7 @@ namespace MessagePack
         internal static unsafe bool TryRead<T>(ref this SequenceReader<byte> reader, out T value)
             where T : unmanaged
         {
-            ReadOnlySpan<byte> span = reader.UnreadSpan;
+            ReadOnlySpan<byte> span = reader.UnreadSpan.Span;
             if (span.Length < sizeof(T))
             {
                 return TryReadMultisegment(ref reader, out value);

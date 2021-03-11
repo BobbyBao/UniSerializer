@@ -10,7 +10,7 @@ using System.Buffers;
 namespace MessagePack
 {
 #pragma warning disable SA1205 // Partial elements should declare access
-    ref partial struct MessagePackReader
+    /*ref*/ partial struct MessagePackReader
 #pragma warning restore SA1205 // Partial elements should declare access
     {
         /// <summary>

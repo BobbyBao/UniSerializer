@@ -68,6 +68,15 @@ namespace UniSerializer
         {
         }
 
+        public virtual bool StartProperty(string name)
+        {
+            return false;
+        }
+
+        public virtual void EndProperty()
+        {
+        }
+
         public virtual bool StartArray<T>(ref T array, ref int len)
         {
             return false;
@@ -78,15 +87,6 @@ namespace UniSerializer
         }
 
         public virtual void EndArray()
-        {
-        }
-
-        public virtual bool StartProperty(string name)
-        {
-            return false;
-        }
-
-        public virtual void EndProperty()
         {
         }
 

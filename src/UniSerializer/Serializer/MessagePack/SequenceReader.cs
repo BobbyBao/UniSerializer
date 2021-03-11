@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 
 namespace MessagePack
 {
-    internal ref partial struct SequenceReader<T>
+    internal /*ref*/ partial struct SequenceReader<T>
         where T : unmanaged, IEquatable<T>
     {
         /// <summary>
@@ -65,7 +65,7 @@ namespace MessagePack
             this.currentPosition = sequence.Start;
             this.length = -1;
 
-            ReadOnlySpan<T> first = sequence.First.Span;
+            var first = sequence.First/*.Span*/;
             this.nextPosition = sequence.GetPosition(first.Length);
             this.CurrentSpan = first;
             this.moreData = first.Length > 0;
@@ -88,7 +88,7 @@ namespace MessagePack
             this.CurrentSpanIndex = 0;
             this.Consumed = 0;
             this.memory = memory;
-            this.CurrentSpan = memory.Span;
+            this.CurrentSpan = memory/*.Span*/;
             this.length = memory.Length;
             this.moreData = memory.Length > 0;
 
@@ -131,7 +131,7 @@ namespace MessagePack
         /// <summary>
         /// Gets the current segment in the <see cref="Sequence"/> as a span.
         /// </summary>
-        public ReadOnlySpan<T> CurrentSpan { get; private set; }
+        public ReadOnlyMemory<T> CurrentSpan { get; private set; }
 
         /// <summary>
         /// Gets the index in the <see cref="CurrentSpan"/>.
@@ -141,7 +141,7 @@ namespace MessagePack
         /// <summary>
         /// Gets the unread portion of the <see cref="CurrentSpan"/>.
         /// </summary>
-        public ReadOnlySpan<T> UnreadSpan
+        public ReadOnlyMemory<T> UnreadSpan
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => this.CurrentSpan.Slice(this.CurrentSpanIndex);
@@ -185,7 +185,7 @@ namespace MessagePack
         {
             if (this.moreData)
             {
-                value = this.CurrentSpan[this.CurrentSpanIndex];
+                value = this.CurrentSpan.Span[this.CurrentSpanIndex];
                 return true;
             }
             else
@@ -209,7 +209,7 @@ namespace MessagePack
                 return false;
             }
 
-            value = this.CurrentSpan[this.CurrentSpanIndex];
+            value = this.CurrentSpan.Span[this.CurrentSpanIndex];
             this.CurrentSpanIndex++;
             this.Consumed++;
 
@@ -286,7 +286,7 @@ namespace MessagePack
                 }
                 else
                 {
-                    this.CurrentSpan = memory.Span;
+                    this.CurrentSpan = memory/*.Span*/;
                 }
             }
             else
@@ -311,7 +311,7 @@ namespace MessagePack
                     this.currentPosition = previousNextPosition;
                     if (memory.Length > 0)
                     {
-                        this.CurrentSpan = memory.Span;
+                        this.CurrentSpan = memory/*.Span*/;
                         this.CurrentSpanIndex = 0;
                         return;
                     }
@@ -453,7 +453,7 @@ namespace MessagePack
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryCopyTo(Span<T> destination)
         {
-            ReadOnlySpan<T> firstSpan = this.UnreadSpan;
+            ReadOnlySpan<T> firstSpan = this.UnreadSpan.Span;
             if (firstSpan.Length >= destination.Length)
             {
                 firstSpan.Slice(0, destination.Length).CopyTo(destination);
@@ -470,7 +470,7 @@ namespace MessagePack
                 return false;
             }
 
-            ReadOnlySpan<T> firstSpan = this.UnreadSpan;
+            ReadOnlySpan<T> firstSpan = this.UnreadSpan.Span;
             Debug.Assert(firstSpan.Length < destination.Length, "firstSpan.Length < destination.Length");
             firstSpan.CopyTo(destination);
             int copied = firstSpan.Length;

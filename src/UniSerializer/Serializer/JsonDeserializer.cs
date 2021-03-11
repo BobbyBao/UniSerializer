@@ -92,6 +92,23 @@ namespace UniSerializer
         {
         }
 
+        public override bool StartProperty(string name)
+        {
+            if (!currentNode.TryGetProperty(name, out var element))
+            {
+                return false;
+            }
+
+            parentNodes[nodeCount++] = currentNode;
+            currentNode = element;
+            return true;
+        }
+
+        public override void EndProperty()
+        {
+            currentNode = parentNodes[--nodeCount];
+        }
+
         public override bool StartArray<T>(ref T array, ref int len)
         {
             if (currentNode.ValueKind == JsonValueKind.Null)
@@ -120,23 +137,6 @@ namespace UniSerializer
         public override void EndArray()
         {
             currentNode = parentNodes[--nodeCount];
-        }
-
-        public override bool StartProperty(string name)
-        {
-            if (!currentNode.TryGetProperty(name, out var element))
-            {
-                return false;
-            }
-
-            parentNodes[nodeCount++] = currentNode;
-            currentNode = element;
-            return true;
-        }
-
-        public override void EndProperty()
-        {
-            currentNode = parentNodes[--nodeCount];            
         }
 
         public override void SerializeNull()

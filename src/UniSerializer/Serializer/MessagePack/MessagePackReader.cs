@@ -24,7 +24,7 @@ namespace MessagePack
 #else
     public
 #endif
-    ref partial struct MessagePackReader
+    /*ref*/ partial struct MessagePackReader
     {
         /// <summary>
         /// The reader over the sequence.
@@ -735,7 +735,7 @@ namespace MessagePack
 
             if (this.reader.CurrentSpanIndex + length <= this.reader.CurrentSpan.Length)
             {
-                span = this.reader.CurrentSpan.Slice(this.reader.CurrentSpanIndex, length);
+                span = this.reader.CurrentSpan.Slice(this.reader.CurrentSpanIndex, length).Span;
                 this.reader.Advance(length);
                 return true;
             }
@@ -765,13 +765,13 @@ namespace MessagePack
 
             int byteLength = this.GetStringLengthInBytes();
 
-            ReadOnlySpan<byte> unreadSpan = this.reader.UnreadSpan;
+            ReadOnlyMemory<byte> unreadSpan = this.reader.UnreadSpan;
             //UnityEngine.Debug.Log(reader.CurrentSpan[0]);
             //UnityEngine.Debug.Log(unreadSpan[0]);
             if (unreadSpan.Length >= byteLength)
             {
                 // Fast path: all bytes to decode appear in the same span.
-                string value = StringEncoding.UTF8.GetString(unreadSpan.Slice(0, byteLength));
+                string value = StringEncoding.UTF8.GetString(unreadSpan.Slice(0, byteLength).Span);
                 this.reader.Advance(byteLength);
                 return value;
             }
@@ -1110,7 +1110,7 @@ namespace MessagePack
                 remainingByteLength -= bytesRead;
                 bool flush = remainingByteLength == 0;
 #if NETCOREAPP
-                initializedChars += decoder.GetChars(this.reader.UnreadSpan.Slice(0, bytesRead), charArray.AsSpan(initializedChars), flush);
+                initializedChars += decoder.GetChars(this.reader.UnreadSpan.Slice(0, bytesRead).Span, charArray.AsSpan(initializedChars), flush);
 #else
                 unsafe
                 {

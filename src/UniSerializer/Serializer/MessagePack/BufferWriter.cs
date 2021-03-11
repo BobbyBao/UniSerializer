@@ -14,7 +14,7 @@ namespace MessagePack
     /// <summary>
     /// A fast access struct that wraps <see cref="IBufferWriter{T}"/>.
     /// </summary>
-    internal ref struct BufferWriter
+    internal /*ref*/ struct BufferWriter
     {
         /// <summary>
         /// The underlying <see cref="IBufferWriter{T}"/>.
@@ -25,7 +25,7 @@ namespace MessagePack
         /// The result of the last call to <see cref="IBufferWriter{T}.GetSpan(int)"/>, less any bytes already "consumed" with <see cref="Advance(int)"/>.
         /// Backing field for the <see cref="Span"/> property.
         /// </summary>
-        private Span<byte> _span;
+        private Memory<byte> _span;
 
         /// <summary>
         /// The result of the last call to <see cref="IBufferWriter{T}.GetMemory(int)"/>, less any bytes already "consumed" with <see cref="Advance(int)"/>.
@@ -63,7 +63,7 @@ namespace MessagePack
 
             var memory = _output.GetMemoryCheckResult();
             MemoryMarshal.TryGetArray(memory, out _segment);
-            _span = memory.Span;
+            _span = memory/*.Span*/;
         }
 
         /// <summary>
@@ -81,13 +81,14 @@ namespace MessagePack
             _output = null;
 
             _segment = new ArraySegment<byte>(array);
-            _span = _segment.AsSpan();
+            _span = _segment/*.AsSpan()*/;
         }
 
         /// <summary>
         /// Gets the result of the last call to <see cref="IBufferWriter{T}.GetSpan(int)"/>.
         /// </summary>
-        public Span<byte> Span => _span;
+        public Span<byte> Span => _span.Span;
+        public Memory<byte> Memory => _span;
 
         /// <summary>
         /// Gets the total number of bytes written with this writer.
@@ -118,7 +119,7 @@ namespace MessagePack
             }
             else
             {
-                return ref _span.GetPinnableReference();
+                return ref _span.Span.GetPinnableReference();
             }
         }
 
@@ -161,7 +162,7 @@ namespace MessagePack
         {
             if (_span.Length >= source.Length)
             {
-                source.CopyTo(_span);
+                source.CopyTo(_span.Span);
                 Advance(source.Length);
             }
             else
@@ -218,7 +219,7 @@ namespace MessagePack
 
             var memory = _output.GetMemoryCheckResult(count);
             MemoryMarshal.TryGetArray(memory, out _segment);
-            _span = memory.Span;
+            _span = memory/*.Span*/;
         }
 
         /// <summary>
@@ -237,7 +238,7 @@ namespace MessagePack
                 }
 
                 var writable = Math.Min(bytesLeftToCopy, _span.Length);
-                source.Slice(copiedBytes, writable).CopyTo(_span);
+                source.Slice(copiedBytes, writable).CopyTo(_span.Span);
                 copiedBytes += writable;
                 bytesLeftToCopy -= writable;
                 Advance(writable);

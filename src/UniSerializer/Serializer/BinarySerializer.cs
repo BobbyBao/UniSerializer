@@ -1,16 +1,26 @@
-﻿using System;
+﻿using MessagePack;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace UniSerializer
 {
     public class BinarySerializer : Serializer
     {
-        Stream stream;
+        MessagePackWriter writer;
+
+        int depth = 0;
+        uint[] lens = new uint[64];
+        IntPtr[] lenAddr = new IntPtr[64];
+
+        private ref uint PropertyCount => ref lens[depth - 1];
+
         public override void Save<T>(T obj, Stream stream)
         {
-            this.stream = stream;
+            using SequencePool.Rental sequenceRental = SequencePool.Shared.Rent();
+            writer = new MessagePackWriter(sequenceRental.Value);
 
             if (obj.GetType() != typeof(T))
             {
@@ -19,6 +29,21 @@ namespace UniSerializer
             }
             else
                 Serialize(ref obj);
+
+            try
+            {
+                writer.Flush();
+
+                foreach (ReadOnlyMemory<byte> segment in sequenceRental.Value.AsReadOnlySequence)
+                {
+                    stream.Write(segment.Span);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new MessagePackSerializationException("Error occurred while writing the serialized data to the stream.", ex);
+            }
+
 
         }
 
@@ -37,42 +62,51 @@ namespace UniSerializer
                 return false;
             }
 
-//             var type = obj.GetType();
-//             jsonWriter.WriteStartObject();
-//             if (!type.IsValueType)
-//             {
-//                 jsonWriter.WriteString("$type", type.FullName);
-//                 id = Session.AddRefObject(obj);
-//                 jsonWriter.WriteNumber("$id", id);
-//             }
+            var type = obj.GetType();
+
+            ref byte addr = ref writer.GetMapHeader();
+
+            lens[depth] = 0;
+
+            unsafe
+            {
+                lenAddr[depth] = (IntPtr)Unsafe.AsPointer(ref addr);
+            }
+
+            depth++;
+
+
+            if (!type.IsValueType)
+            {
+                writer.Write("$type");
+                writer.Write(type.FullName);
+                PropertyCount++;
+
+                id = Session.AddRefObject(obj);
+                writer.Write("$id");
+                writer.Write(id);
+                PropertyCount++;
+            }
+
+
             return true;
         }
 
         public override void EndObject()
         {
-           // jsonWriter.WriteEndObject();
-        }
+            depth--;
 
-        public override bool StartArray<T>(ref T array, ref int len)
-        {
-            if (array == null)
+            unsafe
             {
-                //jsonWriter.WriteNullValue();
-                return false;
+                MessagePackWriter.WriteBigEndian(lens[depth], (byte*)lenAddr[depth]);
             }
-
-            //jsonWriter.WriteStartArray();
-            return true;
-        }
-
-        public override void EndArray()
-        {
-            //jsonWriter.WriteEndArray();
+            
         }
 
         public override bool StartProperty(string name)
         {
-            //jsonWriter.WritePropertyName(name);
+            PropertyCount++;
+            writer.Write(name);
             return true;
         }
 
@@ -80,67 +114,82 @@ namespace UniSerializer
         {
         }
 
+        public override bool StartArray<T>(ref T array, ref int len)
+        {
+            if (array == null)
+            {
+                writer.WriteNil();
+                return false;
+            }
+
+            writer.WriteArrayHeader(len);
+            return true;
+        }
+
+        public override void EndArray()
+        {
+        }
+
         public override void SerializeNull()
         {
-            //jsonWriter.WriteNullValue();
+            writer.WriteNil();
         }
 
         public override void SerializePrimitive<T>(ref T val)
         {
-            /*
             switch (val)
             {
                 case bool v:
-                    jsonWriter.WriteBooleanValue(v);
+                    writer.Write(v);
                     break;
                 case int v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case uint v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case float v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case double v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case long v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case ulong v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case short v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case ushort v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case char v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case sbyte v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case byte v:
-                    jsonWriter.WriteNumberValue(v);
+                    writer.Write(v);
                     break;
                 case decimal v:
-                    jsonWriter.WriteNumberValue(v);
+                    //writer.Write(v);
                     break;
             }
-            */
+            
         }
 
         public override void SerializeString(ref string val)
         {
-            //jsonWriter.WriteStringValue(val);
+            writer.Write(val);
         }
 
         public override void SerializeBytes(ref byte[] val)
         {
-            //jsonWriter.WriteBase64StringValue(val);
+            writer.Write(val);
         }
     }
 }

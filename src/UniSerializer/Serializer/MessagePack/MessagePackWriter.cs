@@ -24,7 +24,7 @@ namespace MessagePack
 #else
     public
 #endif
-    ref struct MessagePackWriter
+    /*ref*/ struct MessagePackWriter
     {
         /// <summary>
         /// The writer to use.
@@ -188,6 +188,16 @@ namespace MessagePack
                 WriteBigEndian(count, span.Slice(1));
                 this.writer.Advance(5);
             }
+        }
+
+        public ref byte GetMapHeader()
+        {
+            Span<byte> span = this.writer.GetSpan(5);
+            span[0] = MessagePackCode.Map32;
+            var spanLen = span.Slice(1);
+            //WriteBigEndian(0, span.Slice(1));
+            this.writer.Advance(5);
+            return ref spanLen.GetPinnableReference();            
         }
 
         /// <summary>
@@ -1163,7 +1173,7 @@ namespace MessagePack
             }
         }
 
-        private static unsafe void WriteBigEndian(uint value, byte* span)
+        public static unsafe void WriteBigEndian(uint value, byte* span)
         {
             unchecked
             {

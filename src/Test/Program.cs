@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace UniSerializer
-{
+{    
     public class RefObject
     {
         public string Name { get; set; }
@@ -12,6 +12,7 @@ namespace UniSerializer
 
     public struct StructObject
     {
+        public string Name { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
 
@@ -122,6 +123,8 @@ namespace UniSerializer
             aa.Children.Add(new ClassObject());
 
             new JsonSerializer().Save((object)aa, "test.json");
+
+            new BinarySerializer().Save((object)aa, "test.bin");
 
             var obj = new JsonDeserializer().Load<ClassObject>("test.json");
 
