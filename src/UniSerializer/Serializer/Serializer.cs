@@ -10,7 +10,6 @@ namespace UniSerializer
     public abstract class Serializer : ISerializer
     {
         public bool IsReading { get; } = false;
-        public bool IsWriting => !IsReading;
         public SerializeSession Session { get; } = new SerializeSession();
 
         public void Save<T>(T obj, string path)
@@ -34,31 +33,14 @@ namespace UniSerializer
             }
             else
             {
-                FormatterCache<T>.Instance.Serialize(this, ref val);
-                
-            }
-        }
-
-        public virtual void Serialize(ref object val)
-        {
-            Type type = val.GetType();
-
-            if (type.IsPrimitive)
-            {
-                SerializePrimitive(ref val);
-            }
-            else
-            {
-                FormatterCache.Get(type).Serialize(this, ref val);
-            }
-        }
-
-        public virtual void SerializeProperty<T>(string name, ref T val)
-        {
-            if(StartProperty(name))
-            {
-                Serialize(ref val);
-                EndProperty();
+                if (val == null || type == val.GetType())
+                {
+                    FormatterCache<T>.Instance.Serialize(this, ref val);
+                }
+                else
+                {
+                    FormatterCache.Get(val.GetType()).Serialize(this, ref Unsafe.As<T, object>(ref val));
+                }
             }
         }
 

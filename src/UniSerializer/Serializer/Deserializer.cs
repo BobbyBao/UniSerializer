@@ -9,8 +9,6 @@ namespace UniSerializer
     public abstract class Deserializer : ISerializer
     {
         public bool IsReading { get; } = true;
-        public bool IsWriting => !IsReading;
-
         public SerializeSession Session { get; } = new SerializeSession();
 
         public T Load<T>(string path) where T : new()
@@ -39,20 +37,6 @@ namespace UniSerializer
             }
         }
 
-        public virtual void Serialize(ref object val)
-        {
-            Type type = val.GetType();
-
-            if (type.IsPrimitive)
-            {
-                SerializePrimitive(ref val);
-            }
-            else
-            {
-                SerializeObject(ref val);
-            }
-        }
-
         private void SerializeObject<T>(ref T obj)
         {
             if(obj == null)
@@ -69,21 +53,10 @@ namespace UniSerializer
             if(obj != null)
             {
                 Type type = obj.GetType();                    
-                FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, Object>(ref obj));           
+                FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, object>(ref obj));           
             }
             else
                 FormatterCache<T>.Instance.Serialize(this, ref obj);
-        }
-
-        public virtual void SerializeProperty<T>(string name, ref T val)
-        {
-            if(StartProperty(name))
-            {
-                Serialize(ref val);
-
-                EndProperty();
-            }
-
         }
 
         public virtual bool StartObject<T>(ref T obj)
