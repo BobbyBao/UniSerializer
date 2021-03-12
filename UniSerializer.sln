@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "src\Test\Test.cspro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniSerializer", "src\UniSerializer\UniSerializer.csproj", "{A50589E6-7606-444F-B9ED-85DC1A93BBA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniSerializer.Core", "src\UniSerializer.Core\UniSerializer.Core.csproj", "{1DCDB0AD-E058-4040-9551-8589B557D465}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A50589E6-7606-444F-B9ED-85DC1A93BBA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A50589E6-7606-444F-B9ED-85DC1A93BBA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A50589E6-7606-444F-B9ED-85DC1A93BBA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DCDB0AD-E058-4040-9551-8589B557D465}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DCDB0AD-E058-4040-9551-8589B557D465}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DCDB0AD-E058-4040-9551-8589B557D465}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DCDB0AD-E058-4040-9551-8589B557D465}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

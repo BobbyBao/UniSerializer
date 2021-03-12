@@ -1,5 +1,5 @@
 
-#define CAN_EMIT
+//#define CAN_EMIT
 
 namespace UniSerializer
 {

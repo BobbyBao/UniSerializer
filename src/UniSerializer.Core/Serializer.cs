@@ -20,10 +20,6 @@ namespace UniSerializer
             }
         }
 
-        public virtual void Save<T>(T obj, Stream stream)
-        {
-        }
-
         public virtual void Serialize<T>(ref T val)
         {
             Type type = typeof(T);
@@ -44,52 +40,30 @@ namespace UniSerializer
             }
         }
 
-        public virtual bool StartObject<T>(ref T obj)
-        {
-            return false;
-        }
+        public abstract void Save<T>(T obj, Stream stream);
 
-        public virtual void EndObject()
-        {
-        }
+        public abstract bool StartObject<T>(ref T obj);
 
-        public virtual bool StartProperty(string name)
-        {
-            return false;
-        }
+        public abstract void EndObject();
 
-        public virtual void EndProperty()
-        {
-        }
+        public abstract bool StartProperty(string name);
 
-        public virtual bool StartArray<T>(ref T array, ref int len)
-        {
-            return false;
-        }
+        public abstract void EndProperty();
 
-        public void SetElement(int index)
-        {
-        }
+        public abstract bool StartArray<T>(ref T array, ref int len);
 
-        public virtual void EndArray()
-        {
-        }
+        public abstract void SetElement(int index);
 
-        public virtual void SerializeNull()
-        {
-        }
+        public abstract void EndArray();
 
-        public virtual void SerializePrimitive<T>(ref T val)
-        {
-        }
+        public abstract void SerializeNull();
 
-        public virtual void SerializeString(ref string val)
-        {
-        }
+        public abstract void SerializePrimitive<T>(ref T val);
 
-        public virtual void SerializeBytes(ref byte[] val)
-        {
-        }
+        public abstract void SerializeString(ref string val);
+
+        public abstract void SerializeBytes(ref byte[] val);
+
 
     }
 }

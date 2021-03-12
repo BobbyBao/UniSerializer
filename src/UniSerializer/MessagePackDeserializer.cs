@@ -7,21 +7,19 @@ using System.Text;
 
 namespace UniSerializer
 {
-    public class BinaryDeserializer : Deserializer
+    public class MessagePackDeserializer : Deserializer
     {
         private const int MaxHintSize = 1024 * 1024;
         MessagePackReader reader;
         public override T Load<T>(Stream stream)
         {
             using var sequenceRental = SequencePool.Shared.Rent();
-
             var sequence = sequenceRental.Value;
             try
             {
                 int bytesRead;
                 do
                 {
-                    //cancellationToken.ThrowIfCancellationRequested();
                     Span<byte> span = sequence.GetSpan(stream.CanSeek ? (int)Math.Min(MaxHintSize, stream.Length - stream.Position) : 0);
                     bytesRead = stream.Read(span);
                     sequence.Advance(bytesRead);
@@ -33,10 +31,7 @@ namespace UniSerializer
                 throw new MessagePackSerializationException("Error occurred while reading from the stream.", ex);
             }
 
-            reader = new MessagePackReader(sequence)
-            {
-                //CancellationToken = cancellationToken,
-            };
+            reader = new MessagePackReader(sequence);
 
             T obj = default;
             Serialize(ref obj);

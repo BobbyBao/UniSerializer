@@ -7,7 +7,7 @@ using System.Text;
 
 namespace UniSerializer
 {
-    public class BinarySerializer : Serializer
+    public class MessagePackSerializer : Serializer
     {
         MessagePackWriter writer;
 
@@ -126,6 +126,10 @@ namespace UniSerializer
             return true;
         }
 
+        public override void SetElement(int index)
+        {
+        }
+
         public override void EndArray()
         {
         }
@@ -191,5 +195,6 @@ namespace UniSerializer
         {
             writer.Write(val);
         }
+
     }
 }

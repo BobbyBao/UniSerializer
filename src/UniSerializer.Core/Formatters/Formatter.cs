@@ -33,8 +33,11 @@ namespace UniSerializer
             if(serialzer.IsReading)
             {
                 string str = default;
-                serialzer.SerializeString(ref str);
-                val = System.Enum.Parse<T>(str);
+                serialzer.SerializeString(ref str);                
+                if(!System.Enum.TryParse(str, out val))
+                {
+                    Log.Error($"Cannot pars {str}, Enum type : {typeof(T)}");
+                }
             }
             else
             {

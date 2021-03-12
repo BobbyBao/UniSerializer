@@ -124,7 +124,7 @@ namespace UniSerializer
 
             new JsonSerializer().Save((object)aa, "test.json");
 
-            new BinarySerializer().Save((object)aa, "test.bin");
+            new MessagePackSerializer().Save((object)aa, "test.bin");
 
             var obj = new JsonDeserializer().Load<ClassObject>("test.json");
 

@@ -82,6 +82,10 @@ namespace UniSerializer
             return true;
         }
 
+        public override void SetElement(int index)
+        {
+        }
+
         public override void EndArray()
         {
             jsonWriter.WriteEndArray();
@@ -150,5 +154,6 @@ namespace UniSerializer
         {
             jsonWriter.WriteBase64StringValue(val);
         }
+
     }
 }
