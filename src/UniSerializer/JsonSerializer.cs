@@ -9,7 +9,8 @@ namespace UniSerializer
 {
     public class JsonSerializer : Serializer
     {
-        System.Text.Json.Utf8JsonWriter jsonWriter;
+        Utf8JsonWriter jsonWriter;
+
         public override void Save<T>(T obj, Stream stream)
         {
             JsonWriterOptions option = new JsonWriterOptions
@@ -17,13 +18,14 @@ namespace UniSerializer
                 Indented = true,
             };
 
-            jsonWriter = new System.Text.Json.Utf8JsonWriter(stream, option);
-            if(obj.GetType() != typeof(T))
+            jsonWriter = new Utf8JsonWriter(stream, option);
+
+            if (obj.GetType() != typeof(T))
             {
                 object o = obj;
                 Serialize(ref o);
             }
-            else 
+            else
                 Serialize(ref obj);
 
             jsonWriter.Dispose();
@@ -52,6 +54,7 @@ namespace UniSerializer
                 id = Session.AddRefObject(obj);
                 jsonWriter.WriteNumber("$id", id);
             }
+
             return true;
         }
 

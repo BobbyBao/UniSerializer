@@ -1,15 +1,22 @@
 ﻿using MessagePack;
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+
+using static System.Buffers.BuffersExtensions;
 
 namespace UniSerializer
 {
     public class MessagePackDeserializer : Deserializer
     {
         private const int MaxHintSize = 1024 * 1024;
+        static readonly byte[] typeCode = Encoding.UTF8.GetBytes("$type");
+        static readonly byte[] idCode = Encoding.UTF8.GetBytes("$id");
+        static readonly byte[] refCode = Encoding.UTF8.GetBytes("$ref|");
+
         MessagePackReader reader;
         public override T Load<T>(Stream stream)
         {
@@ -46,16 +53,22 @@ namespace UniSerializer
             return obj;
         }
 
+
         protected override bool CreateObject(out object obj)
         {
-            /*
-            if (currentNode.ValueKind == JsonValueKind.String)
+            if(reader.TryReadStringSpan(out ReadOnlySpan<byte> span))
             {
-                var str = currentNode.GetString();
-                if (str.StartsWith("$ref|"))
+                if (span.StartsWith(refCode))
                 {
-                    var id = int.Parse(str.AsSpan(5));
-                    obj = Session.GetRefObject(id);
+                    if(Utf8Parser.TryParse(span.Slice(5), out int id, out int bytesConsumed))
+                    {
+                        obj = Session.GetRefObject(id);
+                    }
+                    else
+                    {
+                        obj = null;
+                        Log.Error("Error refid : ", span.ToString());
+                    }
                     return false;
                 }
                 else
@@ -63,14 +76,22 @@ namespace UniSerializer
                     obj = null;
                     return true;
                 }
-
             }
 
-            if (currentNode.ValueKind != JsonValueKind.Object)
+            if(!reader.TryReadMapHeader(out int count))
             {
                 obj = null;
                 return true;
             }
+
+//             if(!reader.TryReadStringSpan(typeCode))
+//             {
+//                 obj = null;
+//                 return true;
+// 
+//             }
+
+            /*
 
             if (!currentNode.TryGetProperty("$type", out var typeName))
             {
@@ -104,11 +125,11 @@ namespace UniSerializer
 
         public override bool StartObject<T>(ref T obj)
         {
-//             if (currentNode.ValueKind == JsonValueKind.Null)
-//             {
-//                 obj = default;
-//                 return false;
-//             }
+            if(reader.TryReadNil())
+            {
+                obj = default;
+                return false;
+            }
 
             return true;
         }
@@ -136,20 +157,26 @@ namespace UniSerializer
 
         public override bool StartArray<T>(ref T array, ref int len)
         {
-//             if (currentNode.ValueKind == JsonValueKind.Null)
-//             {
-//                 array = default;
-//                 return false;
-//             }
-// 
-//             if (currentNode.ValueKind != JsonValueKind.Array)
-//             {
-//                 System.Diagnostics.Debug.Assert(false);
-//                 return false;
-//             }
-// 
-//             len = currentNode.GetArrayLength();
-//             parentNodes[nodeCount++] = currentNode;
+            if (reader.TryReadNil())
+            {
+                array = default;
+                return false;
+            }
+
+            //             if (currentNode.ValueKind == JsonValueKind.Null)
+            //             {
+            //                 array = default;
+            //                 return false;
+            //             }
+            // 
+            //             if (currentNode.ValueKind != JsonValueKind.Array)
+            //             {
+            //                 System.Diagnostics.Debug.Assert(false);
+            //                 return false;
+            //             }
+            // 
+            //             len = currentNode.GetArrayLength();
+            //             parentNodes[nodeCount++] = currentNode;
             return true;
         }
 
@@ -166,6 +193,10 @@ namespace UniSerializer
 
         public override void SerializeNull()
         {
+            if (!reader.TryReadNil())
+            {
+                Log.Error("Read nil failed.");
+            }
         }
 
         public override void SerializePrimitive<T>(ref T val)
@@ -173,43 +204,43 @@ namespace UniSerializer
             switch (val)
             {
                 case bool v:
-                    //Unsafe.As<T, bool>(ref val) = currentNode.GetBoolean();
+                    Unsafe.As<T, bool>(ref val) = reader.ReadBoolean();
                     break;
                 case int v:
-                    //Unsafe.As<T, int>(ref val) = currentNode.GetInt32();
+                    Unsafe.As<T, int>(ref val) = reader.ReadInt32();
                     break;
                 case uint v:
-                    //Unsafe.As<T, uint>(ref val) = currentNode.GetUInt32();
+                    Unsafe.As<T, uint>(ref val) = reader.ReadUInt32();
                     break;
                 case float v:
-                    //Unsafe.As<T, float>(ref val) = currentNode.GetSingle();
+                    Unsafe.As<T, float>(ref val) = reader.ReadSingle();
                     break;
                 case double v:
-                    //Unsafe.As<T, double>(ref val) = currentNode.GetDouble();
+                    Unsafe.As<T, double>(ref val) = reader.ReadDouble();
                     break;
                 case long v:
-                    //Unsafe.As<T, long>(ref val) = currentNode.GetInt64();
+                    Unsafe.As<T, long>(ref val) = reader.ReadInt64();
                     break;
                 case ulong v:
-                    //Unsafe.As<T, ulong>(ref val) = currentNode.GetUInt64();
+                    Unsafe.As<T, ulong>(ref val) = reader.ReadUInt64();
                     break;
                 case short v:
-                    //Unsafe.As<T, short>(ref val) = currentNode.GetInt16();
+                    Unsafe.As<T, short>(ref val) = reader.ReadInt16();
                     break;
                 case ushort v:
-                    //Unsafe.As<T, ushort>(ref val) = currentNode.GetUInt16();
+                    Unsafe.As<T, ushort>(ref val) = reader.ReadUInt16();
                     break;
                 case char v:
-                    //Unsafe.As<T, char>(ref val) = (char)currentNode.GetUInt16();
+                    Unsafe.As<T, char>(ref val) = reader.ReadChar();
                     break;
                 case sbyte v:
-                    //Unsafe.As<T, sbyte>(ref val) = currentNode.GetSByte();
+                    Unsafe.As<T, sbyte>(ref val) = reader.ReadSByte();
                     break;
                 case byte v:
-                    //Unsafe.As<T, byte>(ref val) = currentNode.GetByte();
+                    Unsafe.As<T, byte>(ref val) = reader.ReadByte();
                     break;
                 case decimal v:
-                    //Unsafe.As<T, decimal>(ref val) = currentNode.GetDecimal();
+                    //Unsafe.As<T, decimal>(ref val) = reader.ReadDecimal();
                     break;
             }
 
@@ -217,11 +248,12 @@ namespace UniSerializer
 
         public override void SerializeString(ref string val)
         {
-            //val = currentNode.GetString();
+            val = reader.ReadString();
         }
 
         public override void SerializeBytes(ref byte[] val)
         {
+            val = reader.ReadBytes()?.ToArray();
             //val = currentNode.GetBytesFromBase64();
         }
     }

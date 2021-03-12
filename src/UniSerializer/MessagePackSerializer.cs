@@ -9,11 +9,12 @@ namespace UniSerializer
 {
     public class MessagePackSerializer : Serializer
     {
+        public const int MAX_DEPTH = 64;
         MessagePackWriter writer;
 
         int depth = 0;
-        uint[] lens = new uint[64];
-        IntPtr[] lenAddr = new IntPtr[64];
+        uint[] lens = new uint[MAX_DEPTH];
+        IntPtr[] lenAddr = new IntPtr[MAX_DEPTH];
 
         private ref uint PropertyCount => ref lens[depth - 1];
 
@@ -43,7 +44,6 @@ namespace UniSerializer
             {
                 throw new MessagePackSerializationException("Error occurred while writing the serialized data to the stream.", ex);
             }
-
 
         }
 

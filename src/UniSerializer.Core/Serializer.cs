@@ -20,6 +20,8 @@ namespace UniSerializer
             }
         }
 
+        public abstract void Save<T>(T obj, Stream stream);
+
         public virtual void Serialize<T>(ref T val)
         {
             Type type = typeof(T);
@@ -39,8 +41,6 @@ namespace UniSerializer
                 }
             }
         }
-
-        public abstract void Save<T>(T obj, Stream stream);
 
         public abstract bool StartObject<T>(ref T obj);
 

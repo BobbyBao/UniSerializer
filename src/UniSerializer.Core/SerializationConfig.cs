@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace UniSerializer
+{
+    public class SerializationConfig
+    {
+        public static Action<LogLevel, string> LogWritter 
+        { 
+            set => Log.LogWriter = value;
+        }
+
+
+    }
+}

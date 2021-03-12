@@ -19,10 +19,8 @@ namespace UniSerializer
             }
         }
 
-        public virtual T Load<T>(Stream stream)
-        {
-            return default;
-        }
+        public abstract T Load<T>(Stream stream);
+        
 
         public virtual void Serialize<T>(ref T val)
         {
@@ -59,58 +57,29 @@ namespace UniSerializer
                 FormatterCache<T>.Instance.Serialize(this, ref obj);
         }
 
-        public virtual bool StartObject<T>(ref T obj)
-        {
-            return false;
-        }
+        protected abstract bool CreateObject(out object obj);
+      
+        public abstract bool StartObject<T>(ref T obj);
 
-        public virtual void EndObject()
-        {
-        }
+        public abstract void EndObject();
 
-        public virtual bool StartProperty(string name)
-        {
-            return false;
-        }
+        public abstract bool StartProperty(string name);
 
-        public virtual void EndProperty()
-        {
-        }
+        public abstract void EndProperty();
 
-        public virtual bool StartArray<T>(ref T array, ref int len)
-        {
-            return false;
-        }
+        public abstract bool StartArray<T>(ref T array, ref int len);
 
-        public virtual void SetElement(int index)
-        {
-        }
+        public abstract void SetElement(int index);
 
-        public virtual void EndArray()
-        {
-        }
+        public abstract void EndArray();
 
-        public virtual void SerializeNull()
-        {
-        }
+        public abstract void SerializeNull();
 
-        public virtual void SerializePrimitive<T>(ref T val)
-        {
-        }
+        public abstract void SerializePrimitive<T>(ref T val);
 
-        public virtual void SerializeString(ref string val)
-        {
-        }
+        public abstract void SerializeString(ref string val);
 
-        public virtual void SerializeBytes(ref byte[] val)
-        {
-        }
-
-        protected virtual bool CreateObject(out object obj)
-        {
-            obj = default;
-            return true;
-        }
+        public abstract void SerializeBytes(ref byte[] val);       
 
     }
 }

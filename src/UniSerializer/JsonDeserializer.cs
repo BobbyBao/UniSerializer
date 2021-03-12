@@ -9,8 +9,10 @@ namespace UniSerializer
 {
     public class JsonDeserializer : Deserializer
     {
+        public const int MAX_DEPTH = 64;
+
         JsonDocument doc;
-        JsonElement[] parentNodes = new JsonElement[32];
+        JsonElement[] parentNodes = new JsonElement[MAX_DEPTH];
         int nodeCount = 0;
         JsonElement currentNode;        
         public override T Load<T>(Stream stream)
