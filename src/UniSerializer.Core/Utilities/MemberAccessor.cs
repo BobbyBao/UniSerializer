@@ -9,6 +9,10 @@ namespace UniSerializer
     public abstract class MemberAccessor
     {
         protected MemberInfo memberInfo;
+        protected byte[] utf8Name;
+        public byte[] UTF8Name => utf8Name;
+        public string Name => memberInfo.Name;
+
         public virtual bool Get(ref object obj, out object value) { value = default; return false; }
         public virtual bool Set(ref object obj, object value) { return false; }
 
@@ -22,14 +26,16 @@ namespace UniSerializer
 
         public ObjectMemberAccessor(FieldInfo fieldInfo)
         {
-            this.memberInfo = fieldInfo;
+            memberInfo = fieldInfo;
+            utf8Name = Encoding.UTF8.GetBytes(fieldInfo.Name);
             getter = EmitUtilities.CreateInstanceGetter<K, T>(fieldInfo);
             setter = EmitUtilities.CreateInstanceSetter<K, T>(fieldInfo);
         }
 
         public ObjectMemberAccessor(PropertyInfo propertyInfo)
         {
-            this.memberInfo = propertyInfo;
+            memberInfo = propertyInfo;
+            utf8Name = Encoding.UTF8.GetBytes(propertyInfo.Name);
             getter = (Func<K, T>)Delegate.CreateDelegate(typeof(Func<K, T>), propertyInfo.GetMethod);
             setter = (Action<K, T>)Delegate.CreateDelegate(typeof(Action<K, T>), propertyInfo.SetMethod);
         }

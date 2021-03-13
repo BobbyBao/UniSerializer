@@ -747,6 +747,35 @@ namespace MessagePack
             }
         }
 
+        public bool TryReadPropertyKey(ReadOnlySpan<byte> str)
+        {
+            if (this.IsNil)
+            {
+                return false;
+            }
+
+            long oldPosition = this.reader.Consumed;
+            int length = this.GetStringLengthInBytes();
+            ThrowInsufficientBufferUnless(this.reader.Remaining >= length);
+
+            if (this.reader.CurrentSpanIndex + length <= this.reader.CurrentSpan.Length)
+            {
+                var span = this.reader.CurrentSpan.Slice(this.reader.CurrentSpanIndex, length).Span;
+               
+                if (span.SequenceCompareTo(str) == 0)
+                {
+                    this.reader.Advance(length);
+                    return true;
+                }
+
+            }
+
+               
+            this.reader.Rewind(this.reader.Consumed - oldPosition);           
+               
+            return false;
+            
+        }
         /// <summary>
         /// Reads a string, whose length is determined by a header of one of these types:
         /// <see cref="MessagePackCode.Str8"/>,

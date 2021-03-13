@@ -53,53 +53,61 @@ namespace UniSerializer
             return obj;
         }
 
+        private bool TryGetProperty(string str)
+        {
+            var bytes = Encoding.UTF8.GetBytes(str);
+            return reader.TryReadPropertyKey(bytes);
+        }
 
         protected override bool CreateObject(out object obj)
         {
-            if(reader.TryReadStringSpan(out ReadOnlySpan<byte> span))
+            if(reader.NextMessagePackType == MessagePackType.String)
             {
-                if (span.StartsWith(refCode))
+                if (reader.TryReadStringSpan(out ReadOnlySpan<byte> span))
                 {
-                    if(Utf8Parser.TryParse(span.Slice(5), out int id, out int bytesConsumed))
+                    if (span.StartsWith(refCode))
                     {
-                        obj = Session.GetRefObject(id);
+                        if (Utf8Parser.TryParse(span.Slice(5), out int refID, out int bytesConsumed))
+                        {
+                            obj = Session.GetRefObject(refID);
+                        }
+                        else
+                        {
+                            obj = null;
+                            Log.Error("Error refid : ", span.ToString());
+                        }
+                        return false;
                     }
                     else
                     {
                         obj = null;
-                        Log.Error("Error refid : ", span.ToString());
+                        return true;
                     }
-                    return false;
                 }
-                else
-                {
-                    obj = null;
-                    return true;
-                }
+
             }
 
-            if(!reader.TryReadMapHeader(out int count))
+            if (reader.NextMessagePackType != MessagePackType.Map)
             {
                 obj = null;
                 return true;
             }
 
-//             if(!reader.TryReadStringSpan(typeCode))
-//             {
-//                 obj = null;
-//                 return true;
-// 
-//             }
-
-            /*
-
-            if (!currentNode.TryGetProperty("$type", out var typeName))
+            if (!reader.TryReadMapHeader(out int count))
             {
                 obj = null;
                 return true;
             }
 
-            var type = TypeUtilities.GetType(typeName.GetString());
+            if (!reader.TryReadPropertyKey(typeCode))
+            {
+                obj = null;
+                return true;
+            }
+
+            var typeName = reader.ReadString();
+
+            var type = TypeUtilities.GetType(typeName);
             if (type == null)
             {
                 obj = null;
@@ -108,18 +116,15 @@ namespace UniSerializer
 
             obj = Activator.CreateInstance(type);
 
-            if (currentNode.TryGetProperty("$id", out var idNode))
+            if (!reader.TryReadPropertyKey(idCode))
             {
-                var id = idNode.GetInt32();
-                var id1 = Session.AddRefObject(obj);
-                System.Diagnostics.Debug.Assert(id == id1);
+                Log.Warning("object no id.");
+                return true;
             }
-            else
-            {
-                //
-            }*/
 
-            obj = null;
+            var id = reader.ReadInt32();
+            var id1 = Session.AddRefObject(obj);
+            System.Diagnostics.Debug.Assert(id == id1);
             return true;
         }
 
@@ -131,6 +136,16 @@ namespace UniSerializer
                 return false;
             }
 
+            if(obj.GetType().IsValueType)
+            {
+                if (!reader.TryReadMapHeader(out var len))
+                {
+                    System.Diagnostics.Debug.Assert(false);
+                    return false;
+                }
+
+            }
+
             return true;
         }
 
@@ -140,19 +155,17 @@ namespace UniSerializer
 
         public override bool StartProperty(string name)
         {
-//             if (!currentNode.TryGetProperty(name, out var element))
-//             {
-//                 return false;
-//             }
-// 
-//             parentNodes[nodeCount++] = currentNode;
-//             currentNode = element;
+            if(!TryGetProperty(name))
+            {
+                System.Diagnostics.Debug.Assert(false);
+                return false;
+            }
+
             return true;
         }
 
         public override void EndProperty()
         {
-            //currentNode = parentNodes[--nodeCount];
         }
 
         public override bool StartArray<T>(ref T array, ref int len)
@@ -163,32 +176,21 @@ namespace UniSerializer
                 return false;
             }
 
-            //             if (currentNode.ValueKind == JsonValueKind.Null)
-            //             {
-            //                 array = default;
-            //                 return false;
-            //             }
-            // 
-            //             if (currentNode.ValueKind != JsonValueKind.Array)
-            //             {
-            //                 System.Diagnostics.Debug.Assert(false);
-            //                 return false;
-            //             }
-            // 
-            //             len = currentNode.GetArrayLength();
-            //             parentNodes[nodeCount++] = currentNode;
+            if(! reader.TryReadArrayHeader(out len))
+            {
+                System.Diagnostics.Debug.Assert(false);
+                return false;
+            }
+
             return true;
         }
 
         public override void SetElement(int index)
         {
-//             var parentNode = parentNodes[nodeCount - 1];
-//             currentNode = parentNode[index];
         }
 
         public override void EndArray()
         {
-            //currentNode = parentNodes[--nodeCount];
         }
 
         public override void SerializeNull()
