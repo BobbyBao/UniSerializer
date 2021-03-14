@@ -80,10 +80,16 @@ namespace UniSerializer
 
     public class FormatterCache<T> : FormatterCache
     {
-        public static Formatter<T> Instance { get; }
+        public static Formatter<T> Instance { get; private set; }
         static FormatterCache()
         {
             Instance = (Formatter<T>)Get(typeof(T));
+        }
+
+        public static void Register(Formatter<T> formatter)
+        {
+            Register(typeof(T), formatter);
+            Instance = formatter;
         }
     }
 
