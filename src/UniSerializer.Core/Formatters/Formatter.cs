@@ -18,6 +18,21 @@ namespace UniSerializer
         public abstract void Serialize(ISerializer serialzer, ref T obj);       
     }
 
+    public delegate void FormatFunc<T>(ISerializer serializer, ref T val);
+    public class FormatterProxy<T> : Formatter<T>
+    {
+        FormatFunc<T> formatFunc;
+        public FormatterProxy(FormatFunc<T> func)
+        {
+            formatFunc = func;
+        }
+
+        public override void Serialize(ISerializer serialzer, ref T val)
+        {
+            formatFunc.Invoke(serialzer, ref val);
+        }
+    }
+
     public class StringFormatter : Formatter<string>
     {
         public override void Serialize(ISerializer serialzer, ref string val)

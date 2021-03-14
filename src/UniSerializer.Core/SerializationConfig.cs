@@ -11,6 +11,11 @@ namespace UniSerializer
             set => Log.LogWriter = value;
         }
 
+        public static void Init()
+        {
+
+            //FormatterCache.Register(typeof(T), this);
+        }
 
     }
 }

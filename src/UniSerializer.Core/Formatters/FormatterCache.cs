@@ -18,6 +18,16 @@ namespace UniSerializer
             return formatter;
         }
 
+        public static void Register(Type type, IFormatter formatter)
+        {
+            if (!formatters.TryGetValue(type, out var formatter1))
+            {
+                Log.Error("重复注册Formatter");
+            }
+
+            formatters.Add(type, formatter);
+        }
+
         private static IFormatter CreateFormatter(Type type)
         {
             if (type.IsEnum)
