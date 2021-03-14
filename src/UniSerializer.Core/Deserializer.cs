@@ -29,6 +29,10 @@ namespace UniSerializer
             {
                 SerializePrimitive(ref val);
             }
+            else if(type == typeof(string))
+            {
+                SerializeString(ref Unsafe.As<T, string>(ref val));
+            }
             else
             {
                 SerializeObject(ref val);

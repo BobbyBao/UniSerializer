@@ -23,16 +23,16 @@ namespace UniSerializer
             using SequencePool.Rental sequenceRental = SequencePool.Shared.Rent();
             writer = new MessagePackWriter(sequenceRental.Value);
 
-            if (obj.GetType() != typeof(T))
-            {
-                object o = obj;
-                Serialize(ref o);
-            }
-            else
-                Serialize(ref obj);
-
             try
             {
+				if (obj.GetType() != typeof(T))
+				{
+					object o = obj;
+					Serialize(ref o);
+				}
+				else
+					Serialize(ref obj);
+
                 writer.Flush();
 
                 foreach (ReadOnlyMemory<byte> segment in sequenceRental.Value.AsReadOnlySequence)

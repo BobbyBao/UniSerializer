@@ -11,6 +11,7 @@ namespace UniSerializer
     {
         static ConcurrentDictionary<Type, MetaInfo> metaInfoDB = new ConcurrentDictionary<Type, MetaInfo>();
         private readonly Type type;
+
         public MetaInfo(Type type)
         {
             this.type = type;
@@ -40,6 +41,7 @@ namespace UniSerializer
         }
 
         public Type Type => type;
+        public string TypeName => type.Name;
 
         public static MemberAccessor CreatePropertyAccessor(bool valueType, PropertyInfo propertyInfo)
         {

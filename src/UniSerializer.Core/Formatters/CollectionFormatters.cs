@@ -76,7 +76,12 @@ namespace UniSerializer
     {
         public override void Serialize(ISerializer serialzer, ref Dictionary<K, T> obj)
         {
-            int len = obj?.Count ?? 0;
+            int len = 0;
+            if(obj != null)
+            {
+                len = obj.Count * 2;
+            }
+
             if(!serialzer.StartArray(ref obj, ref len))
             {
                 return;

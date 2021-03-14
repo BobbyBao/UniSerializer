@@ -13,12 +13,12 @@ namespace UniSerializer
 
         JsonDocument doc;
         JsonElement[] parentNodes = new JsonElement[MAX_DEPTH];
-        int nodeCount = 0;
+        int depth = 0;
         JsonElement currentNode;        
         public override T Load<T>(Stream stream)
         {
             doc = JsonDocument.Parse(stream);
-            parentNodes[nodeCount++] = doc.RootElement;
+            parentNodes[depth++] = doc.RootElement;
             currentNode = doc.RootElement;
             T obj = default;
             Serialize(ref obj);
@@ -101,14 +101,14 @@ namespace UniSerializer
                 return false;
             }
 
-            parentNodes[nodeCount++] = currentNode;
+            parentNodes[depth++] = currentNode;
             currentNode = element;
             return true;
         }
 
         public override void EndProperty()
         {
-            currentNode = parentNodes[--nodeCount];
+            currentNode = parentNodes[--depth];
         }
 
         public override bool StartArray<T>(ref T array, ref int len)
@@ -126,19 +126,19 @@ namespace UniSerializer
             }
 
             len = currentNode.GetArrayLength();
-            parentNodes[nodeCount++] = currentNode;
+            parentNodes[depth++] = currentNode;
             return true;
         }
 
         public override void SetElement(int index)
         {
-            var parentNode = parentNodes[nodeCount - 1];
+            var parentNode = parentNodes[depth - 1];
             currentNode = parentNode[index];
         }
 
         public override void EndArray()
         {
-            currentNode = parentNodes[--nodeCount];
+            currentNode = parentNodes[--depth];
         }
 
         public override void SerializeNull()

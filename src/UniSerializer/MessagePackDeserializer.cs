@@ -32,25 +32,26 @@ namespace UniSerializer
                     sequence.Advance(bytesRead);
                 }
                 while (bytesRead > 0);
-            }
+
+				reader = new MessagePackReader(sequence);
+
+				T obj = default;
+				Serialize(ref obj);
+
+				if (stream.CanSeek && !reader.End)
+				{
+					// Reverse the stream as many bytes as we left unread.
+					int bytesNotRead = checked((int)reader.Sequence.Slice(reader.Position).Length);
+					stream.Seek(-bytesNotRead, SeekOrigin.Current);
+				}
+
+				return obj;
+			}
             catch (Exception ex)
             {
                 throw new MessagePackSerializationException("Error occurred while reading from the stream.", ex);
             }
 
-            reader = new MessagePackReader(sequence);
-
-            T obj = default;
-            Serialize(ref obj);
-
-            if (stream.CanSeek && !reader.End)
-            {
-                // Reverse the stream as many bytes as we left unread.
-                int bytesNotRead = checked((int)reader.Sequence.Slice(reader.Position).Length);
-                stream.Seek(-bytesNotRead, SeekOrigin.Current);
-            }
-
-            return obj;
         }
 
         private bool TryGetProperty(string str)
@@ -155,11 +156,15 @@ namespace UniSerializer
 
         public override bool StartProperty(string name)
         {
-            if(!TryGetProperty(name))
-            {
-                System.Diagnostics.Debug.Assert(false);
-                return false;
-            }
+//             if(!TryGetProperty(name))
+//             {
+//                 System.Diagnostics.Debug.Assert(false);
+//                 return false;
+//             }
+
+            var propName = reader.ReadString();
+            System.Diagnostics.Debug.Assert(name == propName);
+
 
             return true;
         }
@@ -250,13 +255,18 @@ namespace UniSerializer
 
         public override void SerializeString(ref string val)
         {
+            if(reader.TryReadNil())
+            {
+                val = null;
+                return;
+            }
+
             val = reader.ReadString();
         }
 
         public override void SerializeBytes(ref byte[] val)
         {
             val = reader.ReadBytes()?.ToArray();
-            //val = currentNode.GetBytesFromBase64();
         }
     }
 }
