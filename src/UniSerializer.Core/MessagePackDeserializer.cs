@@ -158,16 +158,8 @@ namespace UniSerializer
 
         public override bool StartProperty(string name)
         {
-//             if(!TryGetProperty(name))
-//             {
-//                 System.Diagnostics.Debug.Assert(false);
-//                 return false;
-//             }
-
             var propName = reader.ReadString();
             System.Diagnostics.Debug.Assert(name == propName);
-
-
             return true;
         }
 
