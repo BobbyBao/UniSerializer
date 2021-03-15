@@ -26,15 +26,6 @@ namespace UniSerializer
             {
                 foreach (var it in metaInfo)
                 {
-                    if(metaInfo.TypeName == "RefObject")
-                    {
-                        if(it.Key == "Name")
-                        {
-
-                        }
-                    }
-
-
                     if (serializer.StartProperty(it.Key))
                     {
                         it.Value.Serialize(serializer, ref Unsafe.As<T, object>(ref obj));

@@ -47,5 +47,9 @@ namespace UniSerializer
             FormatterCache<T>.Register(formatter);
         }
 
+        public static void Register<T>(FormatFunc<T> formatter)
+        {
+            FormatterCache<T>.Register(new FormatterProxy<T>(formatter));
+        }
     }
 }

@@ -20,9 +20,10 @@ namespace UniSerializer
 
         public static void Register(Type type, IFormatter formatter)
         {
-            if (!formatters.TryGetValue(type, out var formatter1))
+            if (formatters.ContainsKey(type))
             {
                 Log.Error("重复注册Formatter");
+                return;
             }
 
             formatters.Add(type, formatter);
