@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="MessagePack\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\UniSerializer.Core\UniSerializer.Core.csproj" />
   </ItemGroup>
 

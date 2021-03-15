@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Nerdbank.Streams;
+using UniSerializer;
 
 namespace MessagePack
 {
@@ -141,7 +142,11 @@ namespace MessagePack
             int bytesRead = 0;
             try
             {
+#if !NETCOREAPP
                 bytesRead = await this.stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+#else
+                bytesRead = await this.stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+#endif
                 return bytesRead > 0;
             }
             finally

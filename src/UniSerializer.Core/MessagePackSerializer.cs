@@ -20,29 +20,31 @@ namespace UniSerializer
 
         public override void Save<T>(T obj, Stream stream)
         {
-            using SequencePool.Rental sequenceRental = SequencePool.Shared.Rent();
-            writer = new MessagePackWriter(sequenceRental.Value);
-
-            try
+            using (SequencePool.Rental sequenceRental = SequencePool.Shared.Rent())
             {
-				if (obj.GetType() != typeof(T))
-				{
-					object o = obj;
-					Serialize(ref o);
-				}
-				else
-					Serialize(ref obj);
+                writer = new MessagePackWriter(sequenceRental.Value);
 
-                writer.Flush();
-
-                foreach (ReadOnlyMemory<byte> segment in sequenceRental.Value.AsReadOnlySequence)
+                try
                 {
-                    stream.Write(segment.Span);
+                    if (obj.GetType() != typeof(T))
+                    {
+                        object o = obj;
+                        Serialize(ref o);
+                    }
+                    else
+                        Serialize(ref obj);
+
+                    writer.Flush();
+
+                    foreach (ReadOnlyMemory<byte> segment in sequenceRental.Value.AsReadOnlySequence)
+                    {
+                        stream.Write(segment.Span);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new MessagePackSerializationException("Error occurred while writing the serialized data to the stream.", ex);
+                catch (Exception ex)
+                {
+                    throw new MessagePackSerializationException("Error occurred while writing the serialized data to the stream.", ex);
+                }
             }
 
         }

@@ -1143,7 +1143,7 @@ namespace MessagePack
 #else
                 unsafe
                 {
-                    fixed (byte* pUnreadSpan = this.reader.UnreadSpan)
+                    fixed (byte* pUnreadSpan = this.reader.UnreadSpan.Span)
                     fixed (char* pCharArray = &charArray[initializedChars])
                     {
                         initializedChars += decoder.GetChars(pUnreadSpan, bytesRead, pCharArray, charArray.Length - initializedChars, flush);

@@ -20,36 +20,38 @@ namespace UniSerializer
         MessagePackReader reader;
         public override T Load<T>(Stream stream)
         {
-            using var sequenceRental = SequencePool.Shared.Rent();
-            var sequence = sequenceRental.Value;
-            try
+            using (var sequenceRental = SequencePool.Shared.Rent())
             {
-                int bytesRead;
-                do
+                var sequence = sequenceRental.Value;
+                try
                 {
-                    Span<byte> span = sequence.GetSpan(stream.CanSeek ? (int)Math.Min(MaxHintSize, stream.Length - stream.Position) : 0);
-                    bytesRead = stream.Read(span);
-                    sequence.Advance(bytesRead);
+                    int bytesRead;
+                    do
+                    {
+                        Span<byte> span = sequence.GetSpan(stream.CanSeek ? (int)Math.Min(MaxHintSize, stream.Length - stream.Position) : 0);
+                        bytesRead = stream.Read(span);
+                        sequence.Advance(bytesRead);
+                    }
+                    while (bytesRead > 0);
+
+                    reader = new MessagePackReader(sequence);
+
+                    T obj = default;
+                    Serialize(ref obj);
+
+                    if (stream.CanSeek && !reader.End)
+                    {
+                        // Reverse the stream as many bytes as we left unread.
+                        int bytesNotRead = checked((int)reader.Sequence.Slice(reader.Position).Length);
+                        stream.Seek(-bytesNotRead, SeekOrigin.Current);
+                    }
+
+                    return obj;
                 }
-                while (bytesRead > 0);
-
-				reader = new MessagePackReader(sequence);
-
-				T obj = default;
-				Serialize(ref obj);
-
-				if (stream.CanSeek && !reader.End)
-				{
-					// Reverse the stream as many bytes as we left unread.
-					int bytesNotRead = checked((int)reader.Sequence.Slice(reader.Position).Length);
-					stream.Seek(-bytesNotRead, SeekOrigin.Current);
-				}
-
-				return obj;
-			}
-            catch (Exception ex)
-            {
-                throw new MessagePackSerializationException("Error occurred while reading from the stream.", ex);
+                catch (Exception ex)
+                {
+                    throw new MessagePackSerializationException("Error occurred while reading from the stream.", ex);
+                }
             }
 
         }
