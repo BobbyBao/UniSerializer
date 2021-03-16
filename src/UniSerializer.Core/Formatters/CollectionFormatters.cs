@@ -109,11 +109,14 @@ namespace UniSerializer
             }
             else
             {
+                int i = 0;
                 foreach (var kvp in obj)
                 {
                     K k = kvp.Key;
                     T v = kvp.Value;
+                    serialzer.SetElement(i++);
                     serialzer.Serialize(ref k);
+                    serialzer.SetElement(i++);
                     serialzer.Serialize(ref v);
                 }
 

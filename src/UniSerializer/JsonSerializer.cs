@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
-
+#if false
 namespace UniSerializer
 {
     public class JsonSerializer : Serializer
@@ -160,3 +160,4 @@ namespace UniSerializer
 
     }
 }
+#endif

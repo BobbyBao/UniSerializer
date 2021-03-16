@@ -13,10 +13,10 @@ namespace UniSerializer
         MessagePackWriter writer;
 
         int depth = 0;
-        uint[] lens = new uint[MAX_DEPTH];
+        uint[] propertyNum = new uint[MAX_DEPTH];
         IntPtr[] lenAddr = new IntPtr[MAX_DEPTH];
 
-        private ref uint PropertyCount => ref lens[depth - 1];
+        private ref uint PropertyNum => ref propertyNum[depth - 1];
 
         public override void Save<T>(T obj, Stream stream)
         {
@@ -68,7 +68,7 @@ namespace UniSerializer
 
             ref byte addr = ref writer.GetMapHeader();
 
-            lens[depth] = 0;
+            propertyNum[depth] = 0;
 
             unsafe
             {
@@ -82,12 +82,12 @@ namespace UniSerializer
             {
                 writer.Write("$type");
                 writer.Write(type.FullName);
-                PropertyCount++;
+                PropertyNum++;
 
                 id = Session.AddRefObject(obj);
                 writer.Write("$id");
                 writer.Write(id);
-                PropertyCount++;
+                PropertyNum++;
             }
 
 
@@ -100,14 +100,14 @@ namespace UniSerializer
 
             unsafe
             {
-                MessagePackWriter.WriteBigEndian(lens[depth], (byte*)lenAddr[depth]);
+                MessagePackWriter.WriteBigEndian(propertyNum[depth], (byte*)lenAddr[depth]);
             }
             
         }
 
         public override bool StartProperty(string name)
         {
-            PropertyCount++;
+            PropertyNum++;
             writer.Write(name);
             return true;
         }
