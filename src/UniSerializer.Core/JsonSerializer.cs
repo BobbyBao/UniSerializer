@@ -61,7 +61,6 @@ namespace UniSerializer
                 jsonWriter.WriteRaw(newLine);
             }
 
-
             if (!type.IsValueType)
             {
                 StartProperty("$type");
@@ -80,8 +79,12 @@ namespace UniSerializer
         public override void EndObject()
         {  
             depth--;
-            jsonWriter.WriteRaw(newLine);
-            jsonWriter.WriteRaw(indent[depth]);
+
+            if (this.Indented)
+            {
+                jsonWriter.WriteRaw(newLine);
+                jsonWriter.WriteRaw(indent[depth]);
+            }
     
             jsonWriter.WriteEndObject();
         }
@@ -91,16 +94,25 @@ namespace UniSerializer
             if (ChildrenCount > 0)
             {
                 jsonWriter.WriteValueSeparator();
-                jsonWriter.WriteRaw(newLine);
+
+                if (this.Indented)
+                {
+                    jsonWriter.WriteRaw(newLine);
+                }
             }
 
             if (this.Indented)
             {
-                jsonWriter.WriteRaw(indent[depth /*+ 1*/]);
+                jsonWriter.WriteRaw(indent[depth]);
             }
 
             jsonWriter.WritePropertyName(name);
-            jsonWriter.WriteRaw((byte)' ');
+
+            if (this.Indented)
+            {
+                jsonWriter.WriteRaw((byte)' ');
+            }
+
             return true;
         }
 
@@ -118,7 +130,12 @@ namespace UniSerializer
             }
 
             jsonWriter.WriteBeginArray();
-            jsonWriter.WriteRaw(newLine);
+
+            if (this.Indented)
+            {
+                jsonWriter.WriteRaw(newLine);
+            }
+
             childrenCount[depth++] = 0;
             return true;
         }
@@ -128,16 +145,28 @@ namespace UniSerializer
             if (index > 0)
             {
                 jsonWriter.WriteRaw((byte)',');
-                jsonWriter.WriteRaw(newLine);
+
+                if (this.Indented)
+                {
+                    jsonWriter.WriteRaw(newLine);
+                }
             }
-            jsonWriter.WriteRaw(indent[depth]);
+
+            if (this.Indented)
+            {
+                jsonWriter.WriteRaw(indent[depth]);
+            }
         }
 
         public override void EndArray()
         {   
             depth--;
-            jsonWriter.WriteRaw(newLine);
-            jsonWriter.WriteRaw(indent[depth]);
+
+            if (this.Indented)
+            {
+                jsonWriter.WriteRaw(newLine);
+                jsonWriter.WriteRaw(indent[depth]);
+            }
     
             jsonWriter.WriteEndArray();
         }
