@@ -9,7 +9,7 @@ using Utf8Json;
 
 namespace UniSerializer
 {
-    public class JsonSerializer : Serializer
+    public class Utf8JsonSerializer : Serializer
     {
         public const int MAX_DEPTH = 64;
         JsonWriter jsonWriter;

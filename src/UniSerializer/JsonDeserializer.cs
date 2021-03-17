@@ -149,43 +149,43 @@ namespace UniSerializer
         {
             switch (val)
             {
-                case bool v:
+                case bool:
                     Unsafe.As<T, bool>(ref val)  = currentNode.GetBoolean();                    
                     break;
-                case int v:
+                case int:
                     Unsafe.As<T, int>(ref val) = currentNode.GetInt32();
                     break;
-                case uint v:
+                case uint:
                     Unsafe.As<T, uint>(ref val) = currentNode.GetUInt32();
                     break;
-                case float v:
+                case float:
                     Unsafe.As<T, float>(ref val) = currentNode.GetSingle();
                     break;
-                case double v:
+                case double:
                     Unsafe.As<T, double>(ref val) = currentNode.GetDouble();
                     break;
-                case long v:
+                case long:
                     Unsafe.As<T, long>(ref val) = currentNode.GetInt64();
                     break;
-                case ulong v:
+                case ulong:
                     Unsafe.As<T, ulong>(ref val) = currentNode.GetUInt64();
                     break;
-                case short v:
+                case short:
                     Unsafe.As<T, short>(ref val) = currentNode.GetInt16();
                     break;
-                case ushort v:
+                case ushort:
                     Unsafe.As<T, ushort>(ref val) = currentNode.GetUInt16();
                     break;
-                case char v:
+                case char:
                     Unsafe.As<T, char>(ref val) = (char)currentNode.GetUInt16();
                     break;
-                case sbyte v:
+                case sbyte:
                     Unsafe.As<T, sbyte>(ref val) = currentNode.GetSByte();
                     break;
-                case byte v:
+                case byte:
                     Unsafe.As<T, byte>(ref val) = currentNode.GetByte();
                     break;
-                case decimal v:
+                case decimal:
                     Unsafe.As<T, decimal>(ref val) = currentNode.GetDecimal();
                     break;
             }
