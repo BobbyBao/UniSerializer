@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UniSerializer\UniSerializer.csproj" />
+    <ProjectReference Include="..\..\UniSerializer.MessagePack\UniSerializer.MessagePack.csproj" />
+    <ProjectReference Include="..\UniSerializer.Json\UniSerializer.Json.csproj" />
+    <ProjectReference Include="..\UniSerializer.Utf8Json\UniSerializer.Utf8Json.csproj" />
   </ItemGroup>
 
 </Project>

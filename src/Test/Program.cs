@@ -125,7 +125,8 @@ namespace UniSerializer
             new Utf8JsonSerializer().Save((object)aa, "test.json");
 
 
-            var obj = new JsonDeserializer().Load<ClassObject>("test.json");
+            //var obj = new JsonDeserializer().Load<ClassObject>("test.json");
+            var obj = new Utf8JsonDeserializer().Load<ClassObject>("test.json");
 
             new Utf8JsonSerializer().Save((object)obj, "test1.json");
 

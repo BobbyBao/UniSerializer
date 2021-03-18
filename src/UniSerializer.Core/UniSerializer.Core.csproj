@@ -17,22 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="MessagePack\MessagePackReader.Integers.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>MessagePackReader.Integers.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="MessagePack\MessagePackReader.Integers.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>MessagePackReader.Integers.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
 
 </Project>
