@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniSerializer.Core", "src\U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniSerializer.Utf8Json", "src\UniSerializer.Utf8Json\UniSerializer.Utf8Json.csproj", "{69B7188C-9C7D-4CED-A573-7445DEC19B6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniSerializer.MessagePack", "UniSerializer.MessagePack\UniSerializer.MessagePack.csproj", "{D0CA5E14-109B-4E40-AE5C-BD08FC080292}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniSerializer.MessagePack", "src\UniSerializer.MessagePack\UniSerializer.MessagePack.csproj", "{D0CA5E14-109B-4E40-AE5C-BD08FC080292}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
