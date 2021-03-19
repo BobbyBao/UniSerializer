@@ -8,8 +8,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\src\UniSerializer.Core\UniSerializer.Core.csproj" />
+    <ProjectReference Include="..\UniSerializer.Core\UniSerializer.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
