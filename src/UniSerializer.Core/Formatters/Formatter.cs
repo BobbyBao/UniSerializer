@@ -7,9 +7,10 @@ namespace UniSerializer
         void Serialize(ISerializer serialzer, ref object obj);
     }
 
-
     public abstract class Formatter<T> : IFormatter
     {
+        public static Formatter<T> Instance;
+
         public void Serialize(ISerializer serialzer, ref object obj)
         {
             Serialize(serialzer, ref Unsafe.As<object, T>(ref obj));

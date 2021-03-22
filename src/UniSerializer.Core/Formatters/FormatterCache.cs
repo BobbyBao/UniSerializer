@@ -3,9 +3,15 @@ using System.Collections.Generic;
 
 namespace UniSerializer
 {
+    public interface IFormatterFactory
+    {
+        IFormatter CreateFormatter(Type type);
+    }
+
     public class FormatterCache
     {
         protected static Dictionary<Type, IFormatter> formatters = new Dictionary<Type, IFormatter>();
+        protected static List<IFormatterFactory> formatterFactories = new List<IFormatterFactory>();
 
         public static IFormatter Get(Type type)
         {
@@ -29,6 +35,11 @@ namespace UniSerializer
             formatters.Add(type, formatter);
         }
 
+        public static void RegisterFactory(IFormatterFactory factory)
+        {
+            formatterFactories.Add(factory);
+        }
+
         private static IFormatter CreateFormatter(Type type)
         {
             if (type.IsEnum)
@@ -44,11 +55,6 @@ namespace UniSerializer
             else if (type == typeof(string))
             {
                 return new StringFormatter();
-            }
-            else if (type.IsValueType)
-            {
-                Type instanceType = typeof(ValueTypeFormatter<>).MakeGenericType(type);
-                return Activator.CreateInstance(instanceType) as IFormatter;
             }
 
             if (type.IsArray)
@@ -72,25 +78,43 @@ namespace UniSerializer
 
                 }
             }
-                            
-            Type objectType = typeof(ObjectFormatter<>).MakeGenericType(type);
-            return Activator.CreateInstance(objectType) as IFormatter;            
+
+            foreach(var factory in formatterFactories)
+            { 
+                var formatter = factory.CreateFormatter(type);
+                if(formatter != null)
+                {
+                    return formatter;
+                }
+            }
+
+            if (type.IsValueType)
+            {
+                Type instanceType = typeof(ValueTypeFormatter<>).MakeGenericType(type);
+                return Activator.CreateInstance(instanceType) as IFormatter;
+            }
+            else
+            {
+                Type objectType = typeof(ObjectFormatter<>).MakeGenericType(type);
+                return Activator.CreateInstance(objectType) as IFormatter;
+
+            }           
 
         }
     }
 
     public class FormatterCache<T> : FormatterCache
     {
-        public static Formatter<T> Instance { get; private set; }
+        public static Formatter<T> Instance => Formatter<T>.Instance;
         static FormatterCache()
         {
-            Instance = (Formatter<T>)Get(typeof(T));
+            Formatter<T>.Instance = (Formatter<T>)Get(typeof(T));
         }
 
         public static void Register(Formatter<T> formatter)
         {
             Register(typeof(T), formatter);
-            Instance = formatter;
+            Formatter<T>.Instance = formatter;
         }
     }
 
