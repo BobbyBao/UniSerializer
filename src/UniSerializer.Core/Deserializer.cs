@@ -8,8 +8,9 @@ namespace UniSerializer
 {
     public abstract class Deserializer : ISerializer
     {
-        public bool IsReading { get; } = true;
         public SerializeSession Session { get; } = new SerializeSession();
+        public bool IsReading { get; } = true;
+        public bool IsInProperty { get; set; } = true;
 
         public T Load<T>(string path) where T : new()
         {
@@ -61,29 +62,19 @@ namespace UniSerializer
                 FormatterCache<T>.Instance.Serialize(this, ref obj);
         }
 
-        protected abstract bool CreateObject(out object obj);
-      
+        protected abstract bool CreateObject(out object obj);      
         public abstract bool StartObject<T>(ref T obj);
-
         public abstract void EndObject();
-
         public abstract bool StartProperty(string name);
-
         public abstract void EndProperty();
-
         public abstract bool StartArray<T>(ref T array, ref int len);
-
         public abstract void SetElement(int index);
-
         public abstract void EndArray();
-
         public abstract void SerializeNull();
-
         public abstract void SerializePrimitive<T>(ref T val);
-
         public abstract void SerializeString(ref string val);
-
-        public abstract void SerializeBytes(ref byte[] val);       
-
+        public abstract void SerializeBytes(ref byte[] val);
+        public abstract void Serialize(ref Guid val);
+        public abstract void Serialize<T>(ref T val, int count) where T : unmanaged;
     }
 }

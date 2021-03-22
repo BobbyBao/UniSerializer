@@ -201,5 +201,15 @@ namespace UniSerializer
         {
             val = currentNode.GetBytesFromBase64();
         }
+
+        public override void Serialize(ref Guid val)
+        {
+            val = currentNode.GetGuid();
+        }
+
+        public override void Serialize<T>(ref T val, int count)
+        {
+            var str = currentNode.GetString();
+        }
     }
 }

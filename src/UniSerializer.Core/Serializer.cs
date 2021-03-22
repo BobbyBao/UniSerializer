@@ -9,8 +9,9 @@ namespace UniSerializer
 {
     public abstract class Serializer : ISerializer
     {
-        public bool IsReading { get; } = false;
         public SerializeSession Session { get; } = new SerializeSession();
+        public bool IsReading { get; } = false;
+        public bool IsInProperty { get; set; } = true;
 
         public void Save<T>(T obj, string path)
         {
@@ -43,27 +44,17 @@ namespace UniSerializer
         }
 
         public abstract bool StartObject<T>(ref T obj);
-
         public abstract void EndObject();
-
         public abstract bool StartProperty(string name);
-
         public abstract void EndProperty();
-
         public abstract bool StartArray<T>(ref T array, ref int len);
-
         public abstract void SetElement(int index);
-
         public abstract void EndArray();
-
         public abstract void SerializeNull();
-
         public abstract void SerializePrimitive<T>(ref T val);
-
         public abstract void SerializeString(ref string val);
-
         public abstract void SerializeBytes(ref byte[] val);
-
-
+        public abstract void Serialize(ref Guid val);
+        public abstract void Serialize<T>(ref T val, int count) where T : unmanaged;
     }
 }

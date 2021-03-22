@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using MessagePack.Internal;
 using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
@@ -261,6 +262,35 @@ namespace UniSerializer
         public override void SerializeBytes(ref byte[] val)
         {
             val = reader.ReadBytes()?.ToArray();
+        }
+
+        public override void Serialize(ref Guid val)
+        {
+            System.Buffers.ReadOnlySequence<byte> segment = reader.ReadStringSequence().Value;
+            if (segment.Length != 36)
+            {
+                throw new MessagePackSerializationException("Unexpected length of string.");
+            }
+
+            GuidBits result;
+            if (segment.IsSingleSegment)
+            {
+                result = new GuidBits(segment.First.Span);
+            }
+            else
+            {
+                Span<byte> bytes = stackalloc byte[36];
+                segment.CopyTo(bytes);
+                result = new GuidBits(bytes);
+            }
+            
+            val = result.Value;
+
+        }
+
+        public override void Serialize<T>(ref T val, int count)
+        {
+            throw new NotImplementedException();
         }
     }
 }

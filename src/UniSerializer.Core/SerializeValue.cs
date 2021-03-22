@@ -22,8 +22,6 @@ namespace UniSerializer
     [StructLayout(LayoutKind.Explicit)]
     public struct SerializeValue
     {
-        //[FieldOffset(0)]
-        //public long intVal;
         [FieldOffset(0)]
         public double number;
         [FieldOffset(8)]
@@ -49,7 +47,6 @@ namespace UniSerializer
         public SerializeValue(ValueType valueType)
         {
             type = valueType;
-            //intVal = 0;
             number = default;
             str = default;
             obj = null;
@@ -62,7 +59,6 @@ namespace UniSerializer
         {
             type = ValueType.Array;
             number = default;
-            //intVal = 0;
             this.str = default;
             obj = null;
             map = null;
@@ -74,7 +70,6 @@ namespace UniSerializer
         {
             type = ValueType.Map;
             number = default;
-            //intVal = 0;
             this.str = default;
             obj = null;
             array = null;
@@ -86,7 +81,6 @@ namespace UniSerializer
         {
             type = ValueType.Array;
             number = default;
-            //intVal = 0;
             this.str = default;
             obj = null;
             map = null;

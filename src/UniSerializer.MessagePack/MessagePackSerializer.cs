@@ -1,4 +1,5 @@
 ﻿using MessagePack;
+using MessagePack.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -198,5 +199,20 @@ namespace UniSerializer
             writer.Write(val);
         }
 
+        public override void Serialize(ref Guid val)
+        {
+            unsafe
+            {
+                byte* pBytes = stackalloc byte[36];
+                Span<byte> bytes = new Span<byte>(pBytes, 36);
+                new GuidBits(ref val).Write(bytes);
+                writer.WriteString(bytes);
+            }
+        }
+
+        public override void Serialize<T>(ref T val, int count)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -296,5 +296,15 @@ namespace UniSerializer
         {
             //val = currentNode.GetBytesFromBase64();
         }
+
+        public override void Serialize(ref Guid val)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Serialize<T>(ref T val, int count)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

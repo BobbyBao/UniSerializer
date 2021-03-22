@@ -1,4 +1,6 @@
-﻿namespace UniSerializer
+﻿using System;
+
+namespace UniSerializer
 {
 
     public interface ISerializable
@@ -8,8 +10,10 @@
 
     public interface ISerializer
     {
-        bool IsReading { get; }
         SerializeSession Session { get; }
+        bool IsReading { get; }
+        bool IsInProperty { get; }
+
         void Serialize<T>(ref T val);
         bool StartObject<T>(ref T obj);
         void EndObject();
@@ -22,6 +26,8 @@
         void SerializePrimitive<T>(ref T val);
         void SerializeString(ref string val);
         void SerializeBytes(ref byte[] val);
+        void Serialize(ref Guid val);
+        void Serialize<T>(ref T val, int count) where T : unmanaged;
     }
 
     public static class SerializerExt

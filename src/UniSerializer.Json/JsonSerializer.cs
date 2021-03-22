@@ -33,13 +33,13 @@ namespace UniSerializer
 
         public override bool StartObject<T>(ref T obj)
         {
-            if(obj == null)
+            if (obj == null)
             {
                 SerializeNull();
                 return false;
             }
 
-            if(Session.GetRef(obj, out var id))
+            if (Session.GetRef(obj, out var id))
             {
                 string refID = $"$ref|{id}";
                 SerializeString(ref refID);
@@ -75,12 +75,12 @@ namespace UniSerializer
 
         public override bool StartArray<T>(ref T array, ref int len)
         {
-            if(array == null)
+            if (array == null)
             {
                 jsonWriter.WriteNullValue();
                 return false;
             }
-            
+
             jsonWriter.WriteStartArray();
             return true;
         }
@@ -143,7 +143,7 @@ namespace UniSerializer
                     jsonWriter.WriteNumberValue(v);
                     break;
             }
-                
+
 
 
         }
@@ -158,5 +158,19 @@ namespace UniSerializer
             jsonWriter.WriteBase64StringValue(val);
         }
 
+        public override void Serialize(ref Guid val)
+        {
+            jsonWriter.WriteStringValue(val);
+        }
+
+        public override void Serialize<T>(ref T val, int count)
+        {
+            var sb = Cysharp.Text.ZString.CreateUtf8StringBuilder();
+            for (int i = 0; i < count; i++)
+                sb.Append(val);
+
+            jsonWriter.WriteStringValue(sb.AsSpan());
+
+        }
     }
 }
