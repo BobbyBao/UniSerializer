@@ -209,7 +209,45 @@ namespace UniSerializer
 
         public override void Serialize<T>(ref T val, int count)
         {
-            var str = currentNode.GetString();
+            var str = currentNode.GetString().AsSpan();
+
+            int start = 0;
+            int elementCount = 0;
+
+            switch (val)
+            {
+                case int:
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        if (str[i] == ',')
+                        {
+                            var v = int.Parse(str.Slice(start, i - start));
+                            Unsafe.As<T, int>(ref Unsafe.Add(ref val, elementCount)) = v;
+                            elementCount++;
+                            start = i + 1;
+                        }
+                    }
+
+                    break;
+                case float:
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        if (str[i] == ',')
+                        {
+                            var v = float.Parse(str.Slice(start, i - start));
+                            Unsafe.As<T, float>(ref Unsafe.Add(ref val, elementCount)) = v;
+                            elementCount++;
+                            start = i + 1;
+                        }
+                    }
+
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            System.Diagnostics.Debug.Assert(count == elementCount);
+
         }
     }
 }

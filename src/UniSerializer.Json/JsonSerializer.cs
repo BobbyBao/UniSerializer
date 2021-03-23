@@ -165,9 +165,16 @@ namespace UniSerializer
 
         public override void Serialize<T>(ref T val, int count)
         {
-            var sb = Cysharp.Text.ZString.CreateUtf8StringBuilder();
+            using var sb = Cysharp.Text.ZString.CreateUtf8StringBuilder();
             for (int i = 0; i < count; i++)
+            {
+                if(i != 0)
+                {
+                    sb.Append(',');
+                }
+
                 sb.Append(val);
+            }
 
             jsonWriter.WriteStringValue(sb.AsSpan());
 

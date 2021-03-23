@@ -34,5 +34,36 @@ namespace UniSerializer
 
         }
 
+        private static readonly Type GenericListInterface = typeof(IList<>);
+        private static readonly Type GenericCollectionInterface = typeof(ICollection<>);
+        public static Type[] GetArgumentsOfInheritedOpenGenericInterface(this Type candidateType, Type openGenericInterfaceType)
+        {
+            if ((openGenericInterfaceType == GenericListInterface || openGenericInterfaceType == GenericCollectionInterface) && candidateType.IsArray)
+            {
+                return new Type[] { candidateType.GetElementType() };
+            }
+
+            if (candidateType == openGenericInterfaceType)
+                return candidateType.GetGenericArguments();
+
+            if (candidateType.IsGenericType && candidateType.GetGenericTypeDefinition() == openGenericInterfaceType)
+                return candidateType.GetGenericArguments();
+
+            var baseType = candidateType.BaseType;
+            while (baseType != null)
+            {
+                if (!baseType.IsGenericType) continue;
+
+                var result = baseType.GetArgumentsOfInheritedOpenGenericInterface(openGenericInterfaceType);
+
+                if (result != null)
+                    return result;
+
+                baseType = baseType.BaseType;
+            }
+
+            return null;
+        }
+
     }
 }

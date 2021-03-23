@@ -12,7 +12,58 @@ namespace UniSerializer
     {
         protected static Dictionary<Type, IFormatter> formatters = new Dictionary<Type, IFormatter>();
         protected static List<IFormatterFactory> formatterFactories = new List<IFormatterFactory>();
+        static FormatterCache()
+        {
+            foreach (var ass in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var attrUncast in ass.GetCustomAttributes(typeof(RegisterFormatterAttribute), true))
+                {
+                    var attr = (RegisterFormatterAttribute)attrUncast;
 
+                    if (!attr.FormatterType.IsClass
+                        || attr.FormatterType.IsAbstract
+                        || attr.FormatterType.GetConstructor(Type.EmptyTypes) == null
+                        || !typeof(Formatter<>).IsAssignableFrom(attr.FormatterType))
+                    {
+                        continue;
+                    }
+
+                    var TargetType = attr.FormatterType.GetArgumentsOfInheritedOpenGenericInterface(typeof(Formatter<>))[0];
+                    try
+                    {
+                        Register(TargetType, (IFormatter)Activator.CreateInstance(attr.FormatterType));
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Exception was thrown while instantiating Formatter of type ", attr.FormatterType.FullName, ".", ex.Message);
+                    }
+
+                }
+
+                foreach (var attrUncast in ass.GetCustomAttributes(typeof(RegisterFormatterFactoryAttribute), true))
+                {
+                    var attr = (RegisterFormatterFactoryAttribute)attrUncast;
+
+                    if (!attr.FormatterFactoryType.IsClass
+                        || attr.FormatterFactoryType.IsAbstract
+                        || attr.FormatterFactoryType.GetConstructor(Type.EmptyTypes) == null
+                        || !typeof(IFormatterFactory).IsAssignableFrom(attr.FormatterFactoryType))
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        RegisterFactory((IFormatterFactory)Activator.CreateInstance(attr.FormatterFactoryType));
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("Exception was thrown while instantiating FormatterLocator of type ", attr.FormatterFactoryType.FullName, ".", ex.Message);
+                    }
+
+                }
+            }
+        }
+            
         public static IFormatter Get(Type type)
         {
             if (!formatters.TryGetValue(type, out var formatter))

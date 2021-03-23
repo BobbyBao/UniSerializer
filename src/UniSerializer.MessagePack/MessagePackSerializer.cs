@@ -212,7 +212,12 @@ namespace UniSerializer
 
         public override void Serialize<T>(ref T val, int count)
         {
-            throw new NotImplementedException();
+            writer.WriteArrayHeader(count);
+
+            for(int i = 0; i < count; i++)
+            {
+                SerializePrimitive(ref Unsafe.Add(ref val, i));
+            }
         }
     }
 }

@@ -290,7 +290,18 @@ namespace UniSerializer
 
         public override void Serialize<T>(ref T val, int count)
         {
-            throw new NotImplementedException();
+            if (!reader.TryReadArrayHeader(out var len))
+            {
+                System.Diagnostics.Debug.Assert(false);
+                return;
+            }
+
+            System.Diagnostics.Debug.Assert(len == count);
+
+            for (int i = 0; i < count; i++)
+            {
+                SerializePrimitive(ref Unsafe.Add(ref val, i));
+            }
         }
     }
 }
