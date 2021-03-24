@@ -23,10 +23,10 @@ namespace UniSerializer
             if (obj.GetType() != typeof(T))
             {
                 object o = obj;
-                Serialize(ref o);
+                Serialize(ref o, 1);
             }
             else
-                Serialize(ref obj);
+                Serialize(ref obj, 1);
 
             jsonWriter.Dispose();
         }
@@ -143,8 +143,6 @@ namespace UniSerializer
                     jsonWriter.WriteNumberValue(v);
                     break;
             }
-
-
 
         }
 

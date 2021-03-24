@@ -73,7 +73,7 @@ namespace UniSerializer
                     continue;
                 }
                 
-                if (!fieldInfo.IsPublic && !fieldInfo.IsDefined(typeof(DataMemberAttribute)))
+                if (!fieldInfo.IsPublic && !fieldInfo.IsDefined(typeof(DataMemberAttribute)) && !fieldInfo.IsDefined(typeof(SerializedFieldAttribute)))
                 {
                     continue;
                 }

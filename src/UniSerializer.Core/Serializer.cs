@@ -23,7 +23,7 @@ namespace UniSerializer
 
         public abstract void Save<T>(T obj, Stream stream);
 
-        public virtual void Serialize<T>(ref T val)
+        public virtual void Serialize<T>(ref T val, uint flags)
         {
             Type type = typeof(T);
             if (type.IsPrimitive)
@@ -34,11 +34,11 @@ namespace UniSerializer
             {
                 if (val == null || type == val.GetType())
                 {
-                    FormatterCache<T>.Instance.Serialize(this, ref val);
+                    FormatterCache<T>.Instance.Serialize(this, ref val, flags);
                 }
                 else
                 {
-                    FormatterCache.Get(val.GetType()).Serialize(this, ref Unsafe.As<T, object>(ref val));
+                    FormatterCache.Get(val.GetType()).Serialize(this, ref Unsafe.As<T, object>(ref val), flags);
                 }
             }
         }

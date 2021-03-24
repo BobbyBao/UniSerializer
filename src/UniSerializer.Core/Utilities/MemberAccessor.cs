@@ -69,7 +69,7 @@ namespace UniSerializer
             if(serializer.IsReading)
             {
                 T val = default;
-                serializer.Serialize(ref val);
+                serializer.Serialize(ref val, 0);
                 Set(obj, val);
             }
             else

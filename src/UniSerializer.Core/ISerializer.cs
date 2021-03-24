@@ -14,7 +14,7 @@ namespace UniSerializer
         bool IsReading { get; }
         bool IsInProperty { get; }
 
-        void Serialize<T>(ref T val);
+        void Serialize<T>(ref T val, uint flags = 0);
         bool StartObject<T>(ref T obj);
         void EndObject();
         bool StartProperty(string name);
@@ -36,7 +36,7 @@ namespace UniSerializer
         {
             if (serializer.StartProperty(name))
             {
-                serializer.Serialize(ref val);
+                serializer.Serialize(ref val, 0);
 
                 serializer.EndProperty();
             }

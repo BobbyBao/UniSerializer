@@ -38,7 +38,7 @@ namespace UniSerializer
                     reader = new MessagePackReader(sequence);
 
                     T obj = default;
-                    Serialize(ref obj);
+                    Serialize(ref obj, 1);
 
                     if (stream.CanSeek && !reader.End)
                     {

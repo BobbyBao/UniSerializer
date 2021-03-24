@@ -7,7 +7,7 @@ namespace UniSerializer
 {
     public sealed class ArrayFormatter<T> : Formatter<T[]>
     {
-        public override void Serialize(ISerializer serialzer, ref T[] obj)
+        public override void Serialize(ISerializer serialzer, ref T[] obj, uint flags)
         {
             int len = obj?.Length ?? 0;
             if(!serialzer.StartArray(ref obj, ref len))
@@ -23,7 +23,7 @@ namespace UniSerializer
             for(int i = 0; i < len; i++)
             {
                 serialzer.SetElement(i);
-                serialzer.Serialize(ref obj[i]);
+                serialzer.Serialize(ref obj[i], 0);
             }
 
             serialzer.EndArray();
@@ -32,7 +32,7 @@ namespace UniSerializer
 
     public class ListFormatter<T> : Formatter<List<T>>
     {
-        public override void Serialize(ISerializer serialzer, ref List<T> obj)
+        public override void Serialize(ISerializer serialzer, ref List<T> obj, uint flags)
         {
             int len = obj?.Count ?? 0;
             if(!serialzer.StartArray(ref obj, ref len))
@@ -52,7 +52,7 @@ namespace UniSerializer
                 {
                     T val = default;
                     serialzer.SetElement(i);
-                    serialzer.Serialize(ref val);
+                    serialzer.Serialize(ref val, 0);
                     obj.Add(val);
                 }
 
@@ -63,7 +63,7 @@ namespace UniSerializer
                 {
                     T val = obj[i];
                     serialzer.SetElement(i);
-                    serialzer.Serialize(ref val);                    
+                    serialzer.Serialize(ref val, 0);                    
                 }
 
             }
@@ -74,7 +74,7 @@ namespace UniSerializer
 
     public class DictionaryFormatter<K, T> : Formatter<Dictionary<K, T>>
     {
-        public override void Serialize(ISerializer serialzer, ref Dictionary<K, T> obj)
+        public override void Serialize(ISerializer serialzer, ref Dictionary<K, T> obj, uint flags)
         {
             int len = 0;
             if(obj != null)
@@ -100,9 +100,9 @@ namespace UniSerializer
                     K key = default;
                     T val = default;
                     serialzer.SetElement(i++);
-                    serialzer.Serialize(ref key);
+                    serialzer.Serialize(ref key, 0);
                     serialzer.SetElement(i++);
-                    serialzer.Serialize(ref val);
+                    serialzer.Serialize(ref val, 0);
                     obj[key] = val;
                 }
 
@@ -115,9 +115,9 @@ namespace UniSerializer
                     K k = kvp.Key;
                     T v = kvp.Value;
                     serialzer.SetElement(i++);
-                    serialzer.Serialize(ref k);
+                    serialzer.Serialize(ref k, 0);
                     serialzer.SetElement(i++);
-                    serialzer.Serialize(ref v);
+                    serialzer.Serialize(ref v, 0);
                 }
 
             }

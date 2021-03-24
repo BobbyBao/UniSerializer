@@ -21,7 +21,7 @@ namespace UniSerializer
             parentNodes[depth++] = doc.RootElement;
             currentNode = doc.RootElement;
             T obj = default;
-            Serialize(ref obj);
+            Serialize(ref obj, 1);
             return obj;
         }
 
@@ -223,6 +223,19 @@ namespace UniSerializer
                         {
                             var v = int.Parse(str.Slice(start, i - start));
                             Unsafe.As<T, int>(ref Unsafe.Add(ref val, elementCount)) = v;
+                            elementCount++;
+                            start = i + 1;
+                        }
+                    }
+
+                    break;
+                case uint:
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        if (str[i] == ',')
+                        {
+                            var v = uint.Parse(str.Slice(start, i - start));
+                            Unsafe.As<T, uint>(ref Unsafe.Add(ref val, elementCount)) = v;
                             elementCount++;
                             start = i + 1;
                         }

@@ -4,6 +4,14 @@ using System.Text;
 
 namespace UniSerializer
 {
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class SerializedFieldAttribute : Attribute
+    {
+        public SerializedFieldAttribute()
+        {
+        }
+    }
+
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     public class RegisterFormatterAttribute : Attribute
     {

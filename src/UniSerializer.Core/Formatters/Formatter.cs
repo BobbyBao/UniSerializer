@@ -1,22 +1,23 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace UniSerializer
 {
     public interface IFormatter
     {        
-        void Serialize(ISerializer serialzer, ref object obj);
+        void Serialize(ISerializer serialzer, ref object obj, uint flags);
     }
-
+    
     public abstract class Formatter<T> : IFormatter
     {
         public static Formatter<T> Instance;
 
-        public void Serialize(ISerializer serialzer, ref object obj)
+        public void Serialize(ISerializer serialzer, ref object obj, uint flags)
         {
-            Serialize(serialzer, ref Unsafe.As<object, T>(ref obj));
+            Serialize(serialzer, ref Unsafe.As<object, T>(ref obj), flags);
         }
 
-        public abstract void Serialize(ISerializer serialzer, ref T obj);       
+        public abstract void Serialize(ISerializer serialzer, ref T obj, uint flags);       
     }
 
     public delegate void FormatFunc<T>(ISerializer serializer, ref T val);
@@ -28,7 +29,7 @@ namespace UniSerializer
             formatFunc = func;
         }
 
-        public override void Serialize(ISerializer serialzer, ref T val)
+        public override void Serialize(ISerializer serialzer, ref T val, uint flags)
         {
             formatFunc.Invoke(serialzer, ref val);
         }
@@ -36,7 +37,7 @@ namespace UniSerializer
 
     public class StringFormatter : Formatter<string>
     {
-        public override void Serialize(ISerializer serialzer, ref string val)
+        public override void Serialize(ISerializer serialzer, ref string val, uint flags)
         {
             serialzer.SerializeString(ref val);            
         }
@@ -44,7 +45,7 @@ namespace UniSerializer
 
     public class EnumFormatter<T> : Formatter<T> where T : struct
     {
-        public override void Serialize(ISerializer serialzer, ref T val)
+        public override void Serialize(ISerializer serialzer, ref T val, uint flags)
         {
             if(serialzer.IsReading)
             {
@@ -66,7 +67,7 @@ namespace UniSerializer
 
     public class PrimitiveFormatter<T> : Formatter<T>
     {
-        public override void Serialize(ISerializer serialzer, ref T val)
+        public override void Serialize(ISerializer serialzer, ref T val, uint flags)
         {
             serialzer.SerializePrimitive(ref val);
         }

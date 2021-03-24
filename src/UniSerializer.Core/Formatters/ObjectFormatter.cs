@@ -6,7 +6,7 @@ namespace UniSerializer
     {
         static MetaInfo metaInfo = MetaInfo.Get<T>();
 
-        public override void Serialize(ISerializer serializer, ref T obj)
+        public override void Serialize(ISerializer serializer, ref T obj, uint flags)
         {
             if(!serializer.StartObject(ref obj))
             {
