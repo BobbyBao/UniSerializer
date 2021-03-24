@@ -171,7 +171,7 @@ namespace UniSerializer
                     sb.Append(',');
                 }
 
-                sb.Append(val);
+                sb.Append(Unsafe.Add(ref val, i));
             }
 
             jsonWriter.WriteStringValue(sb.AsSpan());
