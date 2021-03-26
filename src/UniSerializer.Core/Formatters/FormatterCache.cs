@@ -62,6 +62,8 @@ namespace UniSerializer
 
                 }
             }
+
+            Register(typeof(Guid), new GuidFormatter());
         }
             
         public static IFormatter Get(Type type)

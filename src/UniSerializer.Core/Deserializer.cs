@@ -74,7 +74,7 @@ namespace UniSerializer
         public abstract void SerializePrimitive<T>(ref T val);
         public abstract void SerializeString(ref string val);
         public abstract void SerializeBytes(ref byte[] val);
-        public abstract void Serialize(ref Guid val);
+        public abstract void SerializeGuid(ref Guid val);
         public abstract void Serialize<T>(ref T val, int count) where T : unmanaged;
     }
 }

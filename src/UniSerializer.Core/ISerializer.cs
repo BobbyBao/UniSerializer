@@ -26,7 +26,7 @@ namespace UniSerializer
         void SerializePrimitive<T>(ref T val);
         void SerializeString(ref string val);
         void SerializeBytes(ref byte[] val);
-        void Serialize(ref Guid val);
+        void SerializeGuid(ref Guid val);
         void Serialize<T>(ref T val, int count) where T : unmanaged;
     }
 
