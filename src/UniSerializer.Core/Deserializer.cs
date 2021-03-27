@@ -55,8 +55,11 @@ namespace UniSerializer
 
             if(obj != null)
             {
-                Type type = obj.GetType();                    
-                FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, object>(ref obj), flags);           
+                Type type = obj.GetType();       
+                if(type == typeof(T))                
+                    FormatterCache<T>.Instance.Serialize(this, ref obj, flags);                
+                else
+                    FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, object>(ref obj), flags);           
             }
             else
                 FormatterCache<T>.Instance.Serialize(this, ref obj, flags);

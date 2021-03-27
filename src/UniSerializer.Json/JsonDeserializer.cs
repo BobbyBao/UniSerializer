@@ -226,6 +226,13 @@ namespace UniSerializer
                             elementCount++;
                             start = i + 1;
                         }
+                        else if(i == str.Length - 1)
+                        {
+                            var v = int.Parse(str.Slice(start, i - start + 1));
+                            Unsafe.As<T, int>(ref Unsafe.Add(ref val, elementCount)) = v;
+                            elementCount++;
+                        }
+                        
                     }
 
                     break;
@@ -239,6 +246,12 @@ namespace UniSerializer
                             elementCount++;
                             start = i + 1;
                         }
+                        else if (i == str.Length - 1)
+                        {
+                            var v = uint.Parse(str.Slice(start, i - start + 1));
+                            Unsafe.As<T, uint>(ref Unsafe.Add(ref val, elementCount)) = v;
+                            elementCount++;
+                        }
                     }
 
                     break;
@@ -251,6 +264,12 @@ namespace UniSerializer
                             Unsafe.As<T, float>(ref Unsafe.Add(ref val, elementCount)) = v;
                             elementCount++;
                             start = i + 1;
+                        }
+                        else if (i == str.Length - 1)
+                        {
+                            var v = float.Parse(str.Slice(start, i - start + 1));
+                            Unsafe.As<T, float>(ref Unsafe.Add(ref val, elementCount)) = v;
+                            elementCount++;
                         }
                     }
 

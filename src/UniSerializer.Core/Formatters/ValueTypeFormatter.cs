@@ -16,6 +16,7 @@ namespace UniSerializer
             if (obj is ISerializable serializable)
             {
                 serializable.Serialize(serializer);
+                obj = (T)serializable;
             }
             else
             {
