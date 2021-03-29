@@ -14,6 +14,10 @@ namespace UniSerializer
         protected static List<IFormatterFactory> formatterFactories = new List<IFormatterFactory>();
         static FormatterCache()
         {
+            Register(typeof(Guid), new GuidFormatter());
+            Register(typeof(byte[]), new BytesFormatter());
+
+
             foreach (var ass in AppDomain.CurrentDomain.GetAssemblies())
             {
                 foreach (var attrUncast in ass.GetCustomAttributes(typeof(RegisterFormatterAttribute), true))

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace UniSerializer
@@ -40,6 +41,22 @@ namespace UniSerializer
         public override void Serialize(ISerializer serialzer, ref string val, uint flags)
         {
             serialzer.SerializeString(ref val);            
+        }
+    }
+
+    public class GuidFormatter : Formatter<Guid>
+    {
+        public override void Serialize(ISerializer serialzer, ref Guid val, uint flags)
+        {
+            serialzer.Serialize(ref val);
+        }
+    }
+
+    public class BytesFormatter : Formatter<byte[]>
+    {
+        public override void Serialize(ISerializer serialzer, ref byte[] val, uint flags)
+        {
+            serialzer.SerializeBytes(ref val);
         }
     }
 
