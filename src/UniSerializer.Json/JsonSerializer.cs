@@ -156,7 +156,7 @@ namespace UniSerializer
             jsonWriter.WriteBase64StringValue(val);
         }
 
-        public override void Serialize(ref Guid val)
+        public override void SerializeGuid(ref Guid val)
         {
             jsonWriter.WriteStringValue(val);
         }

@@ -264,7 +264,7 @@ namespace UniSerializer
             val = reader.ReadBytes()?.ToArray();
         }
 
-        public override void Serialize(ref Guid val)
+        public override void SerializeGuid(ref Guid val)
         {
             System.Buffers.ReadOnlySequence<byte> segment = reader.ReadStringSequence().Value;
             if (segment.Length != 36)

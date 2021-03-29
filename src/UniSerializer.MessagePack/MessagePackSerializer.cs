@@ -199,7 +199,7 @@ namespace UniSerializer
             writer.Write(val);
         }
 
-        public override void Serialize(ref Guid val)
+        public override void SerializeGuid(ref Guid val)
         {
             unsafe
             {

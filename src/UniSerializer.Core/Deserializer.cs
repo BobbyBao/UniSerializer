@@ -55,8 +55,11 @@ namespace UniSerializer
 
             if(obj != null)
             {
-                Type type = obj.GetType();                    
-                FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, object>(ref obj), flags);           
+                Type type = obj.GetType();       
+                if(type == typeof(T))                
+                    FormatterCache<T>.Instance.Serialize(this, ref obj, flags);                
+                else
+                    FormatterCache.Get(type).Serialize(this, ref Unsafe.As<T, object>(ref obj), flags);           
             }
             else
                 FormatterCache<T>.Instance.Serialize(this, ref obj, flags);
@@ -74,7 +77,7 @@ namespace UniSerializer
         public abstract void SerializePrimitive<T>(ref T val);
         public abstract void SerializeString(ref string val);
         public abstract void SerializeBytes(ref byte[] val);
-        public abstract void Serialize(ref Guid val);
+        public abstract void SerializeGuid(ref Guid val);
         public abstract void Serialize<T>(ref T val, int count) where T : unmanaged;
     }
 }
