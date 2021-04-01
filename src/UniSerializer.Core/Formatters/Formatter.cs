@@ -48,7 +48,7 @@ namespace UniSerializer
     {
         public override void Serialize(ISerializer serialzer, ref Guid val, uint flags)
         {
-            serialzer.Serialize(ref val);
+            serialzer.SerializeGuid(ref val);
         }
     }
 
