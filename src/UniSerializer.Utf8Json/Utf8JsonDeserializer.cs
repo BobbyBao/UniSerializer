@@ -33,7 +33,7 @@ namespace UniSerializer
             parentNodes[depth++] = doc;
             currentNode = doc;
             T obj = default;
-            Serialize(ref obj);
+            Serialize(ref obj, 1);
             return obj;
         }
 
@@ -297,7 +297,7 @@ namespace UniSerializer
             //val = currentNode.GetBytesFromBase64();
         }
 
-        public override void Serialize(ref Guid val)
+        public override void SerializeGuid(ref Guid val)
         {
             throw new NotImplementedException();
         }

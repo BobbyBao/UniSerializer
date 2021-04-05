@@ -28,10 +28,10 @@ namespace UniSerializer
             if (obj.GetType() != typeof(T))
             {
                 object o = obj;
-                Serialize(ref o);
+                Serialize(ref o, 1);
             }
             else
-                Serialize(ref obj);
+                Serialize(ref obj, 1);
 
             stream.Write(jsonWriter.GetBuffer());
         }
@@ -235,7 +235,7 @@ namespace UniSerializer
             //jsonWriter.WriteBase64StringValue(val);
         }
 
-        public override void Serialize(ref Guid val)
+        public override void SerializeGuid(ref Guid val)
         {
             throw new NotImplementedException();
         }
