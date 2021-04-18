@@ -12,6 +12,14 @@ namespace UniSerializer
         }
     }
 
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ValueClassAttribute : Attribute
+    {
+        public ValueClassAttribute()
+        {
+        }
+    }
+
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
     public class RegisterFormatterAttribute : Attribute
     {

@@ -40,4 +40,36 @@ namespace UniSerializer
 
     }
 
+    public class AbstractObjectFormatter<T> : Formatter<T>
+    {
+        static MetaInfo metaInfo = MetaInfo.Get<T>();
+
+        public override void Serialize(ISerializer serializer, ref T obj, uint flags)
+        {
+            if (!serializer.StartObject(ref obj))
+            {
+                return;
+            }
+
+            if (obj is ISerializable serializable)
+            {
+                serializable.Serialize(serializer);
+            }
+            else
+            {
+                foreach (var it in metaInfo)
+                {
+                    if (serializer.StartProperty(it.Key))
+                    {
+                        it.Value.Serialize(serializer, ref Unsafe.As<T, object>(ref obj));
+                        serializer.EndProperty();
+                    }
+                }
+
+            }
+
+            serializer.EndObject();
+        }
+
+    }
 }

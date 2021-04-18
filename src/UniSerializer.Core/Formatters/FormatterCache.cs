@@ -152,8 +152,17 @@ namespace UniSerializer
             }
             else
             {
-                Type objectType = typeof(ObjectFormatter<>).MakeGenericType(type);
-                return Activator.CreateInstance(objectType) as IFormatter;
+                if (type.IsAbstract)
+                {
+                    Type objectType = typeof(AbstractObjectFormatter<>).MakeGenericType(type);
+                    return Activator.CreateInstance(objectType) as IFormatter;
+                }
+                else
+                {
+
+                    Type objectType = typeof(ObjectFormatter<>).MakeGenericType(type);
+                    return Activator.CreateInstance(objectType) as IFormatter;
+                }
 
             }           
 
@@ -162,11 +171,12 @@ namespace UniSerializer
 
     public class FormatterCache<T> : FormatterCache
     {
-        public static Formatter<T> Instance => Formatter<T>.Instance;
         static FormatterCache()
         {
             Formatter<T>.Instance = (Formatter<T>)Get(typeof(T));
         }
+
+        public static Formatter<T> Instance => Formatter<T>.Instance;
 
         public static void Register(Formatter<T> formatter)
         {

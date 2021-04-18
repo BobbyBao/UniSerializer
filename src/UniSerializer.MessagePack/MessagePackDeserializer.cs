@@ -65,7 +65,7 @@ namespace UniSerializer
 
         protected override bool CreateObject(out object obj)
         {
-            if(reader.NextMessagePackType == MessagePackType.String)
+            if (reader.NextMessagePackType == MessagePackType.String)
             {
                 if (reader.TryReadStringSpan(out ReadOnlySpan<byte> span))
                 {
@@ -134,13 +134,13 @@ namespace UniSerializer
 
         public override bool StartObject<T>(ref T obj)
         {
-            if(reader.TryReadNil())
+            if (reader.TryReadNil())
             {
                 obj = default;
                 return false;
             }
 
-            if(obj.GetType().IsValueType)
+            if (obj.GetType().IsValueType)
             {
                 if (!reader.TryReadMapHeader(out var len))
                 {
@@ -176,7 +176,7 @@ namespace UniSerializer
                 return false;
             }
 
-            if(! reader.TryReadArrayHeader(out len))
+            if (!reader.TryReadArrayHeader(out len))
             {
                 System.Diagnostics.Debug.Assert(false);
                 return false;
@@ -250,7 +250,7 @@ namespace UniSerializer
 
         public override void SerializeString(ref string val)
         {
-            if(reader.TryReadNil())
+            if (reader.TryReadNil())
             {
                 val = null;
                 return;
@@ -283,7 +283,7 @@ namespace UniSerializer
                 segment.CopyTo(bytes);
                 result = new GuidBits(bytes);
             }
-            
+
             val = result.Value;
 
         }

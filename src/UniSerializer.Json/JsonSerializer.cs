@@ -48,7 +48,7 @@ namespace UniSerializer
 
             var type = obj.GetType();
             jsonWriter.WriteStartObject();
-            if (!type.IsValueType)
+            if (!type.IsValueType && !type.IsDefined(typeof(ValueClassAttribute), false))
             {
                 jsonWriter.WriteString("$type", type.FullName);
                 id = Session.AddRefObject(obj);

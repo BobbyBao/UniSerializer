@@ -32,7 +32,11 @@ namespace UniSerializer
             }
             else
             {
-                if (val == null || type == val.GetType())
+                if(val == null)
+                {
+                    SerializeNull();
+                }
+                else if (type == val.GetType())
                 {
                     FormatterCache<T>.Instance.Serialize(this, ref val, flags);
                 }
