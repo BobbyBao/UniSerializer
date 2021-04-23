@@ -10,7 +10,8 @@ namespace UniSerializer
     public abstract class Serializer : ISerializer
     {
         public SerializeSession Session { get; } = new SerializeSession();
-        public bool IsReading { get; } = false;
+        public virtual bool IsReading { get; } = false;
+        public virtual bool IsWriting { get; } = true;
         public bool IsInProperty { get; set; } = true;
 
         public void Save<T>(T obj, string path)

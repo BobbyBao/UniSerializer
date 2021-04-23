@@ -12,6 +12,7 @@ namespace UniSerializer
     {
         SerializeSession Session { get; }
         bool IsReading { get; }
+        bool IsWriting { get; }
         bool IsInProperty { get; }
 
         void Serialize<T>(ref T val, uint flags = 0);

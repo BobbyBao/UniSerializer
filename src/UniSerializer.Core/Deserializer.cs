@@ -9,7 +9,8 @@ namespace UniSerializer
     public abstract class Deserializer : ISerializer
     {
         public SerializeSession Session { get; } = new SerializeSession();
-        public bool IsReading { get; } = true;
+        public virtual bool IsReading { get; } = true;
+        public virtual bool IsWriting { get; } = false;
         public bool IsInProperty { get; set; } = true;
 
         public T Load<T>(string path)
