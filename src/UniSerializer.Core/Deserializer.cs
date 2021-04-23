@@ -12,7 +12,7 @@ namespace UniSerializer
         public bool IsReading { get; } = true;
         public bool IsInProperty { get; set; } = true;
 
-        public T Load<T>(string path) where T : new()
+        public T Load<T>(string path)
         {
             using (var stream = new FileStream(path, FileMode.Open))
             {
@@ -20,8 +20,7 @@ namespace UniSerializer
             }
         }
 
-        public abstract T Load<T>(Stream stream);
-        
+        public abstract T Load<T>(Stream stream);        
 
         public virtual void Serialize<T>(ref T val, uint flags)
         {
