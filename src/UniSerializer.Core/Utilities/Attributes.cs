@@ -13,9 +13,9 @@ namespace UniSerializer
     }
 
     [AttributeUsage(AttributeTargets.Class)]
-    public class ValueClassAttribute : Attribute
+    public class NoPolymorphicAttribute : Attribute
     {
-        public ValueClassAttribute()
+        public NoPolymorphicAttribute()
         {
         }
     }

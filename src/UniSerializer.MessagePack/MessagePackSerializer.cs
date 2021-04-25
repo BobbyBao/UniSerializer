@@ -79,7 +79,7 @@ namespace UniSerializer
             depth++;
 
 
-            if (!type.IsValueType && !type.IsDefined(typeof(ValueClassAttribute), false))
+            if (!type.IsValueType && !type.IsDefined(typeof(NoPolymorphicAttribute), false))
             {
                 writer.Write("$type");
                 writer.Write(type.FullName);
