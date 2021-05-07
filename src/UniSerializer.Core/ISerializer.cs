@@ -29,7 +29,7 @@ namespace UniSerializer
         void SerializeBytes(ref byte[] val);
         void SerializeGuid(ref Guid val);
         void SerializeUnmanaged<T>(ref T val, int count) where T : unmanaged;
-        void SerializeMemory<T>(ref IntPtr data, ref ulong length);
+        void SerializeMemory(ref IntPtr data, ref ulong length);
     }
 
     public static class SerializerExt

@@ -283,7 +283,7 @@ namespace UniSerializer
 
         }
 
-        public override void SerializeMemory<T>(ref IntPtr data, ref ulong length)
+        public override void SerializeMemory(ref IntPtr data, ref ulong length)
         {
             if(currentNode.ValueKind == JsonValueKind.Null)
             {

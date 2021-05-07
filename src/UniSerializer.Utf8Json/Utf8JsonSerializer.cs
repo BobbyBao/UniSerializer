@@ -245,7 +245,7 @@ namespace UniSerializer
             throw new NotImplementedException();
         }
 
-        public override void SerializeMemory<T>(ref IntPtr data, ref ulong length)
+        public override void SerializeMemory(ref IntPtr data, ref ulong length)
         {
             throw new NotImplementedException();
         }

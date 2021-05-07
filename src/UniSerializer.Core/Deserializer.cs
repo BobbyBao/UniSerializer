@@ -79,6 +79,6 @@ namespace UniSerializer
         public abstract void SerializeBytes(ref byte[] val);
         public abstract void SerializeGuid(ref Guid val);
         public abstract void SerializeUnmanaged<T>(ref T val, int count) where T : unmanaged;
-        public abstract void SerializeMemory<T>(ref IntPtr data, ref ulong length);
+        public abstract void SerializeMemory(ref IntPtr data, ref ulong length);
     }
 }

@@ -305,7 +305,7 @@ namespace UniSerializer
             }
         }
 
-        public override void SerializeMemory<T>(ref IntPtr data, ref ulong length)
+        public override void SerializeMemory(ref IntPtr data, ref ulong length)
         {
             var seq = reader.ReadBytes();
 
