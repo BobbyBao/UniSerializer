@@ -240,7 +240,12 @@ namespace UniSerializer
             throw new NotImplementedException();
         }
 
-        public override void Serialize<T>(ref T val, int count)
+        public override void SerializeUnmanaged<T>(ref T val, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SerializeMemory<T>(ref IntPtr data, ref ulong length)
         {
             throw new NotImplementedException();
         }
