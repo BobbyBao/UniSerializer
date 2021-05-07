@@ -210,13 +210,28 @@ namespace UniSerializer
             }
         }
 
-        public override void Serialize<T>(ref T val, int count)
+        public override void SerializeUnmanaged<T>(ref T val, int count)
         {
             writer.WriteArrayHeader(count);
 
             for(int i = 0; i < count; i++)
             {
                 SerializePrimitive(ref Unsafe.Add(ref val, i));
+            }
+        }
+
+        public override void SerializeMemory<T>(ref IntPtr data, ref ulong length)
+        {
+            if (data == IntPtr.Zero)
+            {
+                writer.WriteNil();
+            }
+            else
+            {
+                unsafe
+                {
+                    writer.Write(new ReadOnlySpan<byte>((void*)data, (int)length));
+                }
             }
         }
     }

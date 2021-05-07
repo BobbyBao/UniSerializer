@@ -161,7 +161,7 @@ namespace UniSerializer
             jsonWriter.WriteStringValue(val);
         }
 
-        public override void Serialize<T>(ref T val, int count)
+        public override void SerializeUnmanaged<T>(ref T val, int count)
         {
             using var sb = Cysharp.Text.ZString.CreateUtf8StringBuilder();
             for (int i = 0; i < count; i++)
@@ -176,6 +176,22 @@ namespace UniSerializer
 
             jsonWriter.WriteStringValue(sb.AsSpan());
 
+        }
+
+        public override void SerializeMemory<T>(ref IntPtr data, ref ulong length)
+        {
+            if(data == IntPtr.Zero)
+            {
+                jsonWriter.WriteNullValue();
+            }
+            else
+            {
+                unsafe
+                {
+                    jsonWriter.WriteBase64StringValue(new ReadOnlySpan<byte>((void*)data, (int)length));
+                }
+
+            }
         }
     }
 }

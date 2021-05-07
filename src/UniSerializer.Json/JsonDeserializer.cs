@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 
@@ -207,7 +208,7 @@ namespace UniSerializer
             val = currentNode.GetGuid();
         }
 
-        public override void Serialize<T>(ref T val, int count)
+        public override void SerializeUnmanaged<T>(ref T val, int count)
         {
             var str = currentNode.GetString().AsSpan();
 
@@ -279,6 +280,30 @@ namespace UniSerializer
             }
 
             System.Diagnostics.Debug.Assert(count == elementCount);
+
+        }
+
+        public override void SerializeMemory<T>(ref IntPtr data, ref ulong length)
+        {
+            if(currentNode.ValueKind == JsonValueKind.Null)
+            {
+                data = IntPtr.Zero;
+                length = 0;
+                return;
+            }
+
+            if(currentNode.ValueKind == JsonValueKind.String)
+            {
+                if(currentNode.TryGetBytesFromBase64(out var bytes))
+                {
+                    data = Marshal.AllocHGlobal(bytes.Length);
+                    unsafe
+                    {
+                        Unsafe.CopyBlockUnaligned((void*)data, Unsafe.AsPointer(ref bytes[0]), (uint)bytes.Length);
+                    }
+                }
+
+            }
 
         }
     }

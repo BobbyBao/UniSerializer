@@ -5,6 +5,7 @@ using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using static System.Buffers.BuffersExtensions;
@@ -288,7 +289,7 @@ namespace UniSerializer
 
         }
 
-        public override void Serialize<T>(ref T val, int count)
+        public override void SerializeUnmanaged<T>(ref T val, int count)
         {
             if (!reader.TryReadArrayHeader(out var len))
             {
@@ -302,6 +303,26 @@ namespace UniSerializer
             {
                 SerializePrimitive(ref Unsafe.Add(ref val, i));
             }
+        }
+
+        public override void SerializeMemory<T>(ref IntPtr data, ref ulong length)
+        {
+            var seq = reader.ReadBytes();
+
+            if(seq.HasValue)
+            {
+                data = Marshal.AllocHGlobal((int)seq.Value.Length);
+                unsafe
+                {
+                    seq.Value.CopyTo(new Span<byte>((void*)data, (int)seq.Value.Length));
+                }
+            }
+            else
+            {
+                data = IntPtr.Zero;
+                length = 0;
+            }
+           
         }
     }
 }
