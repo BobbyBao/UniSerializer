@@ -8,6 +8,31 @@ namespace UniSerializer
         IFormatter CreateFormatter(Type type);
     }
 
+    public class FormatterFactory : IFormatterFactory
+    {
+        Dictionary<Type, IFormatter> formatters = new Dictionary<Type, IFormatter>();
+
+        public IFormatter CreateFormatter(Type type)
+        {
+            if (formatters.TryGetValue(type, out var formatter))
+            {
+                return formatter;
+            }
+
+            return null;
+        }
+
+        public void Register<T>(FormatFunc<T> formatter)
+        {
+            formatters[typeof(T)] = new FormatterProxy<T>(formatter);
+        }
+
+        public void Register<T>(IFormatter formatter)
+        {
+            formatters[typeof(T)] = formatter;
+        }
+    }
+
     public class FormatterCache
     {
         protected static Dictionary<Type, IFormatter> formatters = new Dictionary<Type, IFormatter>();
