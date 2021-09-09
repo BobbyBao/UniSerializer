@@ -20,11 +20,16 @@ namespace UniSerializer
                 obj = new T[len];
             }
 
-            for(int i = 0; i < len; i++)
+            if(obj.Length <  len)
+            {
+                Array.Resize(ref obj, len);
+            }
+
+            for (int i = 0; i < len; i++)
             {
                 serialzer.SetElement(i);
                 serialzer.Serialize(ref obj[i], 0);
-            }
+            }           
 
             serialzer.EndArray();
         }
