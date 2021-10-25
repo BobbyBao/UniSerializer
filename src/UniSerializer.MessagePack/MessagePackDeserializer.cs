@@ -91,13 +91,7 @@ namespace UniSerializer
                 }
 
             }
-
-            if (reader.NextMessagePackType == MessagePackType.Nil)
-            {
-                obj = null;
-                return false;
-            }
-
+            
             if (reader.NextMessagePackType != MessagePackType.Map)
             {
                 obj = null;

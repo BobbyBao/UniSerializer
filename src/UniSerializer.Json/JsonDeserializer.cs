@@ -45,12 +45,6 @@ namespace UniSerializer
 
             }
 
-            if (currentNode.ValueKind == JsonValueKind.Null)
-            {
-                obj = null;
-                return false;
-            }
-
             if (currentNode.ValueKind != JsonValueKind.Object)
             {
                 obj = null;

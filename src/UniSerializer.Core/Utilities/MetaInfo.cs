@@ -42,7 +42,7 @@ namespace UniSerializer
 
             foreach (var propertyInfo in properties)
             {
-                if (propertyInfo.GetMethod == null || propertyInfo.SetMethod == null)
+                if (propertyInfo.GetMethod == null)
                 {
                     continue;
                 }
@@ -57,7 +57,24 @@ namespace UniSerializer
                     continue;
                 }
 
-                Add(propertyInfo.Name, CreatePropertyAccessor(Type.IsValueType, propertyInfo));
+                if(propertyInfo.SetMethod == null)
+                {
+                    if(propertyInfo.PropertyType.IsByRef && propertyInfo.IsDefined(typeof(SerializedFieldAttribute)))
+                    {
+                        var elementType = propertyInfo.PropertyType.GetElementType();
+                        Type instanceType = typeof(RefMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, elementType);
+                        Add(propertyInfo.Name, (MemberAccessor)Activator.CreateInstance(instanceType, propertyInfo));                        
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+
+                else
+                {
+                    Add(propertyInfo.Name, CreatePropertyAccessor(Type.IsValueType, propertyInfo));
+                }
 
             }
 
@@ -107,8 +124,7 @@ namespace UniSerializer
 
         private static MemberAccessor CreatePropertyAccessor(bool valueType, PropertyInfo propertyInfo)
         {
-            Type instanceType = valueType ? typeof(ValueMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType)
-                    : propertyInfo.PropertyType.IsByRef ? typeof(RefMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType)
+            Type instanceType = valueType ? typeof(ValueMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType)                    
                     : typeof(ObjectMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
             return (MemberAccessor)Activator.CreateInstance(instanceType, propertyInfo);
         }

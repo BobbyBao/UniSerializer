@@ -8,6 +8,10 @@ namespace UniSerializer
         public string Name { get; set; }
         public int ID { get; set; }
 
+        [SerializedField]
+        public ref float RefVal => ref floatVal;
+
+        private float floatVal;
     }
 
     public struct StructObject
