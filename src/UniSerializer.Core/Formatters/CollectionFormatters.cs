@@ -20,7 +20,7 @@ namespace UniSerializer
                 obj = new T[len];
             }
 
-            if(obj.Length <  len)
+            if(obj.Length < len)
             {
                 Array.Resize(ref obj, len);
             }

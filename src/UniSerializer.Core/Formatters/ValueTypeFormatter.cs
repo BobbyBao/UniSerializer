@@ -7,7 +7,7 @@ namespace UniSerializer
 {
     public class ValueTypeFormatter<T> : Formatter<T> where T : new()
     {
-        static MetaInfo metaInfo = MetaInfo.Get<T>();
+        static readonly MetaInfo metaInfo = MetaInfo.Get<T>();
 
         public override void Serialize(ISerializer serializer, ref T obj, uint flags)
         {

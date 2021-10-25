@@ -8,10 +8,11 @@ namespace UniSerializer
 {
     public abstract class MemberAccessor
     {
+        public string Name => memberInfo.Name;
+        public byte[] UTF8Name => utf8Name;
+
         protected MemberInfo memberInfo;
         protected byte[] utf8Name;
-        public byte[] UTF8Name => utf8Name;
-        public string Name => memberInfo.Name;
 
         public virtual bool Get(ref object obj, out object value) { value = default; return false; }
         public virtual bool Set(ref object obj, object value) { return false; }
@@ -23,6 +24,12 @@ namespace UniSerializer
     {
         private Func<K, T> getter;
         private Action<K, T> setter;
+
+        public ObjectMemberAccessor(Func<K, T> getter, Action<K, T> setter)
+        {
+            this.getter = getter;
+            this.setter = setter;
+        }
 
         public ObjectMemberAccessor(FieldInfo fieldInfo)
         {
@@ -83,10 +90,77 @@ namespace UniSerializer
 
     }
 
+    public delegate ref TResult RefFunc<in T, TResult>(T arg);
+
+    public class RefMemberAccessor<K, T> : MemberAccessor
+    {
+        private RefFunc<K, T> getter;
+
+        public RefMemberAccessor(RefFunc<K, T> getter)
+        {
+            this.getter = getter;
+        }
+
+        public RefMemberAccessor(PropertyInfo propertyInfo)
+        {
+            memberInfo = propertyInfo;
+            utf8Name = Encoding.UTF8.GetBytes(propertyInfo.Name);
+            getter = (RefFunc<K, T>)Delegate.CreateDelegate(typeof(RefFunc<K, T>), propertyInfo.GetMethod);
+        }
+
+        public override bool Get(ref object obj, out object val)
+        {
+            val = getter((K)obj);
+            return true;
+        }
+
+        public override bool Set(ref object obj, object val)
+        {
+            getter((K)obj) = (T)val;
+            return true;
+        }
+
+        public bool Get(object obj, out T val)
+        {
+            val = getter((K)obj);
+            return true;
+        }
+
+        public bool Set(object obj, T val)
+        {
+            getter((K)obj) = val;
+            return true;
+        }
+
+        public override void Serialize(ISerializer serializer, ref object obj)
+        {
+            if (serializer.IsReading)
+            {
+                T val = default;
+                serializer.Serialize(ref val, 0);
+                Set(obj, val);
+            }
+            else
+            {
+                if (Get(obj, out T val))
+                {
+                    serializer.Serialize(ref val);
+                }
+            }
+        }
+
+    }
+
     public class ValueMemberAccessor<K, T> : MemberAccessor
     {
         private ValueGetter<K, T> getter;
         private ValueSetter<K, T> setter;
+
+        public ValueMemberAccessor(ValueGetter<K, T> getter, ValueSetter<K, T> setter)
+        {
+            this.getter = getter;
+            this.setter = setter;
+        }
 
         public ValueMemberAccessor(FieldInfo fieldInfo)
         {

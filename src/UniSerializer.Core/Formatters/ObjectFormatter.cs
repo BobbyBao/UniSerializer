@@ -4,7 +4,7 @@ namespace UniSerializer
 {
     public class ObjectFormatter<T> : Formatter<T> where T : new()
     {
-        static MetaInfo metaInfo = MetaInfo.Get<T>();
+        static readonly MetaInfo metaInfo = MetaInfo.Get<T>();
 
         public override void Serialize(ISerializer serializer, ref T obj, uint flags)
         {
@@ -42,7 +42,7 @@ namespace UniSerializer
 
     public class AbstractObjectFormatter<T> : Formatter<T>
     {
-        static MetaInfo metaInfo = MetaInfo.Get<T>();
+        static readonly MetaInfo metaInfo = MetaInfo.Get<T>();
 
         public override void Serialize(ISerializer serializer, ref T obj, uint flags)
         {

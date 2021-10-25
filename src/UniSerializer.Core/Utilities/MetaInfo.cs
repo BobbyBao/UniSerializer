@@ -9,12 +9,13 @@ namespace UniSerializer
 {
     public class MetaInfo : Dictionary<string, MemberAccessor>
     {
-        static ConcurrentDictionary<Type, MetaInfo> metaInfoDB = new ConcurrentDictionary<Type, MetaInfo>();
-        private readonly Type type;
+        public Type Type { get; }
+        public string TypeName => Type.Name;
+        private Func<object> Factory { get; set; }
 
         public MetaInfo(Type type)
         {
-            this.type = type;
+            this.Type = type;
 
             if((SerializationConfig.SerializationMode & SerializationMode.Properties) != 0)
             {
@@ -27,12 +28,17 @@ namespace UniSerializer
             }
         }
 
-        public Type Type => type;
-        public string TypeName => type.Name;
+        public object CreateInstance()
+        {
+            if(Factory != null)
+                return Factory.Invoke();
+
+            return Activator.CreateInstance(Type);
+        }
 
         private void AddProperties()
         {
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var properties = Type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             foreach (var propertyInfo in properties)
             {
@@ -51,7 +57,7 @@ namespace UniSerializer
                     continue;
                 }
 
-                Add(propertyInfo.Name, CreatePropertyAccessor(type.IsValueType, propertyInfo));
+                Add(propertyInfo.Name, CreatePropertyAccessor(Type.IsValueType, propertyInfo));
 
             }
 
@@ -59,7 +65,7 @@ namespace UniSerializer
 
         private void AddFields()
         {
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var fields = Type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
             foreach (var fieldInfo in fields)
             {
@@ -78,16 +84,32 @@ namespace UniSerializer
                     continue;
                 }
 
-                Add(fieldInfo.Name, CreateFieldAccessor(type.IsValueType, fieldInfo));
+                Add(fieldInfo.Name, CreateFieldAccessor(Type.IsValueType, fieldInfo));
 
             }
 
         }
 
+        static ConcurrentDictionary<Type, MetaInfo> metaInfoDB = new ConcurrentDictionary<Type, MetaInfo>();
+
+        public static MetaInfo Get<T>() => Get(typeof(T));
+
+        public static MetaInfo Get(Type type)
+        {
+            if (!metaInfoDB.TryGetValue(type, out var metaInfo))
+            {
+                metaInfo = new MetaInfo(type);
+                metaInfoDB.TryAdd(type, metaInfo);
+            }
+
+            return metaInfo;
+        }
+
         private static MemberAccessor CreatePropertyAccessor(bool valueType, PropertyInfo propertyInfo)
         {
             Type instanceType = valueType ? typeof(ValueMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType)
-                 : typeof(ObjectMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
+                    : propertyInfo.PropertyType.IsByRef ? typeof(RefMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType)
+                    : typeof(ObjectMemberAccessor<,>).MakeGenericType(propertyInfo.DeclaringType, propertyInfo.PropertyType);
             return (MemberAccessor)Activator.CreateInstance(instanceType, propertyInfo);
         }
 
@@ -98,18 +120,6 @@ namespace UniSerializer
             return (MemberAccessor)Activator.CreateInstance(instanceType, fieldInfo);
         }
 
-        public static MetaInfo Get<T>() => Get(typeof(T));
-
-        public static MetaInfo Get(Type type)
-        {
-            if(!metaInfoDB.TryGetValue(type, out var metaInfo))
-            {
-                metaInfo = new MetaInfo(type);
-                metaInfoDB.TryAdd(type, metaInfo);
-            }
-
-            return metaInfo;
-        }
 
     }
 
