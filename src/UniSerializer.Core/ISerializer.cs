@@ -34,11 +34,11 @@ namespace UniSerializer
 
     public static class SerializerExt
     {
-        public static void SerializeProperty<T>(this ISerializer serializer, string name, ref T val)
+        public static void SerializeProperty<T>(this ISerializer serializer, string name, ref T val, uint flags = 0)
         {
             if (serializer.StartProperty(name))
             {
-                serializer.Serialize(ref val, 0);
+                serializer.Serialize(ref val, flags);
 
                 serializer.EndProperty();
             }
