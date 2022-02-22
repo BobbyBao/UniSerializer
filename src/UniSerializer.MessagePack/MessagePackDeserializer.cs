@@ -83,6 +83,20 @@ namespace UniSerializer
                         }
                         return false;
                     }
+                    else if(span.Length == 36)
+                    {
+
+                        if (Utf8Parser.TryParse(span, out Guid refID, out int bytesConsumed))
+                        {
+                            obj = Session.GetRefObject(refID);
+                        }
+                        else
+                        {
+                            obj = null;
+                            Log.Error("Error refid : ", span.ToString());
+                        }
+                        return false;
+                    }
                     else
                     {
                         obj = null;
@@ -267,6 +281,12 @@ namespace UniSerializer
 
         public override void SerializeGuid(ref Guid val)
         {
+            if (reader.TryReadNil())
+            {
+                val = Guid.Empty;
+                return;
+            }
+
             System.Buffers.ReadOnlySequence<byte> segment = reader.ReadStringSequence().Value;
             if (segment.Length != 36)
             {

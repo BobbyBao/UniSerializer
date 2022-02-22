@@ -205,6 +205,12 @@ namespace UniSerializer
 
         public override void SerializeGuid(ref Guid val)
         {
+            if(currentNode.ValueKind == JsonValueKind.Null)
+            {
+                val = Guid.Empty;
+                return;
+            }
+
             val = currentNode.GetGuid();
         }
 

@@ -8,7 +8,7 @@ namespace UniSerializer
     {
         private List<object> ojectList = new List<object>();
         private Dictionary<object, int> object2ID = new Dictionary<object, int>();
-
+        public static Func<Guid, object> ObjectLookup { get; set; }
         public int AddRefObject(object obj)
         {
             int id = ojectList.Count;
@@ -32,6 +32,10 @@ namespace UniSerializer
             return ojectList[id];            
         }
 
+        public object GetRefObject(in Guid id)
+        {
+            return ObjectLookup?.Invoke(id);
+        }
 
     }
 }
